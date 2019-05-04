@@ -13,7 +13,13 @@ services:
         POSTGRES_DB: keycloak
         POSTGRES_USER: keycloak
         POSTGRES_PASSWORD: password
+  mailhog:
+      image: mailhog/mailhog
+      ports:
+        - 1025:1025
+        - 8025:8025
   keycloak:
+      container_name: idp
       image: jboss/keycloak
       environment:
         DB_VENDOR: POSTGRES
@@ -30,9 +36,11 @@ services:
         - 9999:8080
       depends_on:
         - postgres
+        - mailhog
       command:
       - "-b 0.0.0.0"
-      #- "-Dkeycloak.import=/opt/jboss/keycloak/realm-config.json"
-      - "-Dkeycloak.migration.action=import -Dkeycloak.migration.provider=singleFile -Dkeycloak.migration.file=/opt/jboss/keycloak/realm-config.json -Dkeycloak.migration.strategy=OVERWRITE_EXISTING"
+      #- "-Dkeycloak.migration.action=import -Dkeycloak.migration.provider=singleFile -Dkeycloak.migration.file=/opt/jboss/keycloak/realm-config.json -Dkeycloak.migration.strategy=OVERWRITE_EXISTING"
       volumes:
         - ./keycloak-configs/keycloak-export.json:/opt/jboss/keycloak/realm-config.json
+      links:
+        - "mailhog:email.server"
