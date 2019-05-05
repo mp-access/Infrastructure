@@ -6,6 +6,8 @@ volumes:
 
 services:
   postgres:
+      container_name: postgresdb
+      hostname: postgres
       image: postgres
       volumes:
         - postgres_data:/var/lib/postgresql/data
@@ -14,12 +16,15 @@ services:
         POSTGRES_USER: keycloak
         POSTGRES_PASSWORD: password
   mailhog:
+      container_name: emailserver
       image: mailhog/mailhog
+      hostname: mailhog
       ports:
         - 1025:1025
         - 8025:8025
   keycloak:
       container_name: idp
+      hostname: idp
       image: jboss/keycloak
       environment:
         DB_VENDOR: POSTGRES
