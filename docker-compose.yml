@@ -44,23 +44,19 @@ services:
         - mailhog
       command:
       - "-b 0.0.0.0"
-      - "-Dkeycloak.migration.action=import -Dkeycloak.migration.provider=singleFile -Dkeycloak.migration.file=/opt/jboss/keycloak/realm-config.json -Dkeycloak.migration.strategy=OVERWRITE_EXISTING"
+      #- "-Dkeycloak.migration.action=import -Dkeycloak.migration.provider=singleFile -Dkeycloak.migration.file=/opt/jboss/keycloak/realm-config.json -Dkeycloak.migration.strategy=OVERWRITE_EXISTING"
       volumes:
         - ./keycloak-configs/keycloak-export.json:/opt/jboss/keycloak/realm-config.json
       links:
         - "mailhog:email.server"
   course-service:
-      build: ../Course-Service/
-      container_name: course-service
-      hostname: api
-      image: course-service:latest
+      image: hoal/course-service
       ports:
         - 8080:8080
       depends_on:
         - keycloak
   nginx:
-      build: ../access-frontend/
-      container_name: nginx
+      image: nginx:latest
       volumes:
         - ./nginx/conf.nginx:/etc/nginx/nginx.conf
         - ./nginx/error.log:/etc/nginx/error_log.log
