@@ -64,16 +64,17 @@ services:
         - 8080:8080
       depends_on:
         - keycloak
-  nginx:
-      image: nginx:latest
-      container_name: reverse-proxy
+        - mongo
+  frontend:
+      image: hoal/frontend
+      container_name: frontend
+      ports:
+        - 80:80
+        - 443:443
       volumes:
         - ./nginx/conf.nginx:/etc/nginx/nginx.conf
         - ./nginx/error.log:/etc/nginx/error_log.log
         - ./nginx/access.log:/etc/nginx/nginx-access.log
-      ports:
-        - 80:80
-        - 443:443
       links:
         - "course-service:api"
         - "keycloak:idp"
