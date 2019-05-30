@@ -6,26 +6,34 @@ volumes:
 
 services:
   postgres:
+      image: postgres
       container_name: keycloak-db
       hostname: postgres
-      image: postgres
       volumes:
         - postgres_data:/var/lib/postgresql/data
       environment:
         POSTGRES_DB: keycloak
         POSTGRES_USER: ${DB_USER}
         POSTGRES_PASSWORD: ${DB_PASSWORD}
+  mongo:
+      image: mongo
+      container_name: mongo
+      ports:
+        - 27017:27017
+      environment:
+        MONGO_INITDB_ROOT_USERNAME: ${MONGO_DB_USER}
+        MONGO_INITDB_ROOT_PASSWORD: ${MONGO_DB_PASSWORD}
   mailhog:
-      container_name: email-server
       image: mailhog/mailhog
+      container_name: email-server
       hostname: mailhog
       ports:
         - 1025:1025
         - 8025:8025
   keycloak:
+      image: jboss/keycloak
       container_name: idp
       hostname: idp
-      image: jboss/keycloak
       environment:
         DB_VENDOR: POSTGRES
         DB_ADDR: postgres

@@ -15,6 +15,11 @@ services:
         POSTGRES_DB: keycloak
         POSTGRES_USER: keycloak
         POSTGRES_PASSWORD: password
+  mongo:
+      image: mongo
+      container_name: mongo
+      ports:
+        - 27017:27017
   mailhog:
       container_name: emailserver
       image: mailhog/mailhog
