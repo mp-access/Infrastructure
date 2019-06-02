@@ -76,6 +76,9 @@ services:
         - ./nginx/conf.nginx:/etc/nginx/nginx.conf
         - ./nginx/error.log:/etc/nginx/error_log.log
         - ./nginx/access.log:/etc/nginx/nginx-access.log
+        - ./nginx/server.crt:/etc/nginx/server.crt
+        - ./nginx/server.key:/etc/nginx/server.key
+        - ./nginx/dhparam.pem:/etc/nginx/dhparam.pem
       links:
         - "course-service:api"
         - "keycloak:idp"
