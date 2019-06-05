@@ -1,6 +1,6 @@
 if [ "$1" = "docker" ]; then
     echo "Removing data from docker volume"
-    docker rm $(docker-compose -f keycloak-postgres.yml ps -q) -f
+    docker rm $(docker-compose -f docker-compose-dev.yml ps -q) -f
     docker volume prune
 elif [ "$1" = "standalone" ]; then
     echo "Removing data from standalone"
