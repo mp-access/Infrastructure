@@ -43,6 +43,7 @@ http {
         access_log /etc/nginx/nginx-access.log compression;
 
         location / {
+            include  mime.types;
             try_files $uri /index.html;
         }
 
