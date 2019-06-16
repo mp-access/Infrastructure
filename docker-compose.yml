@@ -67,7 +67,7 @@ services:
         - keycloak
         - mongo
       environment:
-        GITHUB_WEBHOOK_SECRET: ${GITHUB_WEBHOOK_SECRET}
+        GITHUB_WEBHOOK_SECRET: "${GITHUB_WEBHOOK_SECRET}"
   frontend:
       image: hoal/frontend
       container_name: frontend
