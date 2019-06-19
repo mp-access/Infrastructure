@@ -59,7 +59,7 @@ services:
       links:
         - "mailhog:email.server"
   course-service:
-      image: hoal/course-service
+      image: hoal/course-service:master
       container_name: course-service
       ports:
         - 8080:8080
