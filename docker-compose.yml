@@ -68,6 +68,8 @@ services:
         - mongo
       environment:
         GITHUB_WEBHOOK_SECRET: "${GITHUB_WEBHOOK_SECRET}"
+      volumes:
+        - /var/run/docker.sock:/var/run/docker.sock
   frontend:
       image: hoal/frontend
       container_name: frontend
