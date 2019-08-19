@@ -175,3 +175,4 @@ modules.xml
 server.key
 .env
 
+.ssh
