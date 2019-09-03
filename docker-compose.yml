@@ -68,8 +68,13 @@ services:
         - mongo
       environment:
         GITHUB_WEBHOOK_SECRET: "${GITHUB_WEBHOOK_SECRET}"
+        DOCKER_HOST: "tcp://167:71:53:88:2376"
+        DOCKER_CERT_PATH: "/etc/docker/"
       volumes:
         - /var/run/docker.sock:/var/run/docker.sock
+        - /etc/docker/key.pem:/etc/docker/key.pem
+        - /etc/docker/cert.pem:/etc/docker/cert.pem
+        - /etc/docker/ca.pem:/etc/docker/ca.pem
   frontend:
       image: hoal/frontend
       container_name: frontend
