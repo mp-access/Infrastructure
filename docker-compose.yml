@@ -68,7 +68,7 @@ services:
         - mongo
       environment:
         GITHUB_WEBHOOK_SECRET: "${GITHUB_WEBHOOK_SECRET}"
-        DOCKER_HOST: "tcp://167:71:53:88:2376"
+        DOCKER_HOST: "tcp://167.71.53.88:2376"
         DOCKER_CERT_PATH: "/etc/docker/"
       volumes:
         - /var/run/docker.sock:/var/run/docker.sock
