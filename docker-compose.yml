@@ -66,6 +66,7 @@ services:
         - /etc/docker/key.pem:/etc/docker/key.pem
         - /etc/docker/cert.pem:/etc/docker/cert.pem
         - /etc/docker/ca.pem:/etc/docker/ca.pem
+        - ./.ssh/:/root/.ssh/
   frontend:
       image: hoal/frontend
       ports:
