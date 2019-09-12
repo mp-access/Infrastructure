@@ -68,6 +68,7 @@ services:
         - 443:443
       volumes:
         - ./nginx-logs/:/etc/nginx/logs/
+        - ./nginx/conf.nginx:/etc/nginx/nginx.conf:ro
         - ./nginx/:/etc/nginx/ssl/:ro
       links:
         - "course-service:api"
