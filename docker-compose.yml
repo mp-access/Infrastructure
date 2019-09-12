@@ -67,8 +67,7 @@ services:
         - 80:80
         - 443:443
       volumes:
-        - ./nginx-logs/access.log:/etc/nginx/logs/nginx-access.log
-        - ./nginx-logs/error.log:/etc/nginx/logs/error_log.log
+        - ./nginx-logs/:/etc/nginx/logs/
         - ./nginx/:/etc/nginx/ssl/:ro
       links:
         - "course-service:api"
