@@ -5,6 +5,13 @@ volumes:
       driver: local
 
 services:
+  mailhog:
+    container_name: emailserver
+    image: mailhog/mailhog
+    hostname: mailhog
+    ports:
+      - 1025:1025
+      - 8025:8025
   postgres:
       image: postgres
       container_name: keycloak-db
