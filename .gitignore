@@ -174,5 +174,5 @@ modules.xml
 
 server.key
 .env
-
+docker-certs/
 .ssh
