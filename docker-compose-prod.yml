@@ -15,8 +15,6 @@ services:
         POSTGRES_DB: keycloak
         POSTGRES_USER: ${DB_USER}
         POSTGRES_PASSWORD: ${DB_PASSWORD}
-      networks:
-        - containers
   mongo:
       image: mongo
       container_name: mongo
@@ -25,8 +23,6 @@ services:
       environment:
         MONGO_INITDB_ROOT_USERNAME: ${MONGO_DB_USER}
         MONGO_INITDB_ROOT_PASSWORD: ${MONGO_DB_PASSWORD}
-      networks:
-        - containers
   keycloak:
       image: jboss/keycloak
       hostname: idp
@@ -48,11 +44,8 @@ services:
         - postgres
       command:
       - "-b 0.0.0.0"
-      networks:
-        - containers
   course-service:
       image: hoal/course-service:master
-      network_mode: host
       expose:
         - 8080
       depends_on:
@@ -68,8 +61,6 @@ services:
       volumes:
         - ./docker-certs/:/app/docker-certs/:ro
         - ./.ssh/:/root/.ssh/:ro
-      networks:
-        - containers
   frontend:
       image: hoal/frontend
       ports:
@@ -84,9 +75,3 @@ services:
         - "keycloak:idp"
       depends_on:
         - course-service
-      networks:
-        - containers
-networks:
-  containers:
-    # Use a custom driver
-    driver: "bridge"
