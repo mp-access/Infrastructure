@@ -70,7 +70,7 @@ http {
     '"$http_x_hub_signature" '
     '"$http_referer" "$http_user_agent" "$gzip_ratio"';
 
-    error_log /etc/nginx/error_log.log warn;
+    error_log /etc/nginx/logs/error_log.log warn;
 
     server {
         client_body_buffer_size 10K;
@@ -81,8 +81,8 @@ http {
         root /usr/share/nginx/html;
         listen 443 ssl;
         server_name 142.93.164.106;
-        ssl_certificate /etc/nginx/server.crt;
-        ssl_certificate_key /etc/nginx/server.key;
+        ssl_certificate /etc/nginx/ssl/server.crt;
+        ssl_certificate_key /etc/nginx/ssl/server.key;
 
         # from https://cipherli.st/
         # and https://raymii.org/s/tutorials/Strong_SSL_Security_On_nginx.html
@@ -108,7 +108,7 @@ http {
 
         charset utf-8;
         gzip on;
-        access_log /etc/nginx/nginx-access.log compression buffer=32k;
+        access_log /etc/nginx/logs/nginx-access.log compression buffer=32k;
 
         location / {
             include  mime.types;
