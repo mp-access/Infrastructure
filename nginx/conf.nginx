@@ -104,7 +104,7 @@ http {
         #add_header X-Frame-Options DENY;
         #add_header X-Content-Type-Options nosniff;
 
-        ssl_dhparam /etc/nginx/dhparam.pem;
+        #ssl_dhparam /etc/nginx/dhparam.pem;
 
         charset utf-8;
         gzip on;
