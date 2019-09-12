@@ -44,9 +44,6 @@ services:
         - postgres
       command:
       - "-b 0.0.0.0"
-      #- "-Dkeycloak.migration.action=import -Dkeycloak.migration.provider=singleFile -Dkeycloak.migration.file=/opt/jboss/keycloak/realm-config.json -Dkeycloak.migration.strategy=OVERWRITE_EXISTING"
-      volumes:
-        - ./keycloak-configs/keycloak-export.json:/opt/jboss/keycloak/realm-config.json
   course-service:
       image: hoal/course-service:master
       expose:
