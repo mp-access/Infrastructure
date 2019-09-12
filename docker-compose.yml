@@ -62,7 +62,7 @@ services:
         KEYCLOAK_USER: "${KEYCLOAK_USER}"
         KEYCLOAK_PASSWORD: "${KEYCLOAK_PASSWORD}"
       volumes:
-        - docker-certs/:/app/docker-certs/
+        - ./docker-certs/:/app/docker-certs/
         - ./.ssh/:/root/.ssh/
   frontend:
       image: hoal/frontend
