@@ -66,6 +66,7 @@ services:
         KEYCLOAK_USER: "${KEYCLOAK_USER}"
         KEYCLOAK_PASSWORD: "${KEYCLOAK_PASSWORD}"
         KEYCLOAK_HOST: "${KEYCLOAK_HOST}"
+        JWK_URI: "${JWK_URI}"
       volumes:
         - ./docker-certs/:/app/docker-certs/:ro
         - ./.ssh/:/root/.ssh/:ro
