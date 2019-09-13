@@ -68,9 +68,9 @@ services:
         - 80:80
         - 443:443
       volumes:
-        - ./nginx-logs/:/etc/nginx/logs/
         - ./nginx/conf-prod.nginx:/etc/nginx/nginx.conf:ro
-        - ./nginx/:/etc/nginx/ssl/:ro
+        - ./nginx/logs/:/etc/nginx/logs/
+        - ./nginx/ssl/:/etc/nginx/ssl/:ro
       links:
         - "course-service:api"
         - "keycloak:idp"
