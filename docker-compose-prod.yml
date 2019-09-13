@@ -71,7 +71,7 @@ services:
       volumes:
         - ./nginx/logs/:/etc/nginx/logs/
         - ./nginx/ssl/:/etc/ssl/info1/:ro
-        - ./nginx/conf-prod.nginx:/etc/ssl/nginx.conf:ro
+        - ./nginx/conf-prod.nginx:/etc/nginx/nginx.conf:ro
       links:
         - "course-service:api"
         - "keycloak:idp"
