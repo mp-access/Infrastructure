@@ -70,8 +70,7 @@ services:
         - 443:443
       volumes:
         - ./nginx/logs/:/etc/nginx/logs/
-        - ./nginx/ssl/server.crt:/etc/ssl/certs/:ro
-        - ./nginx/ssl/server.key:/etc/ssl/private/:ro
+        - ./nginx/ssl/:/etc/ssl/info1/:ro
         - ./nginx/conf-prod.nginx:/etc/ssl/nginx.conf:ro
       links:
         - "course-service:api"
