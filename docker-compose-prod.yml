@@ -70,6 +70,8 @@ services:
         - ./nginx/logs/:/etc/nginx/logs/
         - ./nginx/ssl/:/etc/ssl/info1/:ro
         - ./nginx/conf-prod.nginx:/etc/nginx/nginx.conf:ro
+        - ./frontend-configs/keycloak-prod.json:/usr/share/nginx/html/keycloak-prod.json
+        - ./frontend-configs/mime.types:/etc/nginx/mime.types
       links:
         - "course-service:api"
         - "keycloak:idp"
