@@ -58,6 +58,7 @@ services:
         DOCKER_CERT_PATH: "/app/docker-certs/"
         KEYCLOAK_USER: "${KEYCLOAK_USER}"
         KEYCLOAK_PASSWORD: "${KEYCLOAK_PASSWORD}"
+        KEYCLOAK_HOST: "${KEYCLOAK_HOST}"
       volumes:
         - ./docker-certs/:/app/docker-certs/:ro
         - ./.ssh/:/root/.ssh/:ro
