@@ -176,3 +176,5 @@ server.key
 .env
 docker-certs/
 .ssh
+
+/volumes
