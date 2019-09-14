@@ -1,8 +1,5 @@
 version: '3'
 
-volumes:
-  postgres_data:
-      driver: local
 
 services:
   mailhog:
@@ -17,7 +14,7 @@ services:
       container_name: keycloak-db
       hostname: postgres
       volumes:
-        - postgres_data:/var/lib/postgresql/data
+        - ./volumes/postgres/data/db:/var/lib/postgresql/data
       environment:
         POSTGRES_DB: keycloak
         POSTGRES_USER: ${DB_USER}

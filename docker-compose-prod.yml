@@ -9,12 +9,12 @@ services:
       image: postgres
       container_name: keycloak-db
       hostname: postgres
-      volumes:
-        - postgres_data:/var/lib/postgresql/data
       environment:
         POSTGRES_DB: keycloak
         POSTGRES_USER: ${DB_USER}
         POSTGRES_PASSWORD: ${DB_PASSWORD}
+      volumes:
+        - ./volumes/postgres/data/db:/var/lib/postgresql/data
   mongo:
       image: mongo
       container_name: mongo
