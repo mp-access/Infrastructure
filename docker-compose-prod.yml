@@ -44,6 +44,8 @@ services:
         - postgres
       command:
       - "-b 0.0.0.0"
+      volumes:
+        - ./keycloak-themes/access:/opt/jboss/keycloak/themes/access
   course-service:
       image: hoal/course-service:master
       expose:
