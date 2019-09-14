@@ -23,6 +23,8 @@ services:
       environment:
         MONGO_INITDB_ROOT_USERNAME: ${MONGO_DB_USER}
         MONGO_INITDB_ROOT_PASSWORD: ${MONGO_DB_PASSWORD}
+      volumes:
+        - ./volumes/mongodb/data/db:/data/db
   keycloak:
       image: jboss/keycloak
       hostname: idp
@@ -59,6 +61,9 @@ services:
         KEYCLOAK_HOST: "${AUTH_SERVER}"
         JWK_URI: "${JWK_URI}"
         REALM: "${KEYCLOAK_REALM}"
+        MONGO_DB_NAME: ${MONGO_DB_NAME}
+        MONGO_DB_USER: ${MONGO_DB_USER}
+        MONGO_DB_PASSWORD: ${MONGO_DB_PASSWORD}
       volumes:
         - ./docker-certs/:/app/docker-certs/:ro
         - ./.ssh/:/root/.ssh/:ro

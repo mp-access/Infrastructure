@@ -30,6 +30,8 @@ services:
       environment:
         MONGO_INITDB_ROOT_USERNAME: ${MONGO_DB_USER}
         MONGO_INITDB_ROOT_PASSWORD: ${MONGO_DB_PASSWORD}
+      volumes:
+        - ./volumes/mongodb/data/db:/data/db
   keycloak:
       image: jboss/keycloak
       hostname: idp
