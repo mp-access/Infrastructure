@@ -66,6 +66,8 @@ services:
         MONGO_DB_NAME: ${MONGO_DB_NAME}
         MONGO_DB_USER: ${MONGO_DB_USER}
         MONGO_DB_PASSWORD: ${MONGO_DB_PASSWORD}
+        FRONTEND_REALM: ${FRONTEND_REALM}
+        REDIRECT_URI_EMAIL: ${REDIRECT_URI_EMAIL}
       volumes:
         - ./docker-certs/:/app/docker-certs/:ro
         - ./.ssh/:/root/.ssh/:ro
