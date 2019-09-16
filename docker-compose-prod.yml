@@ -70,7 +70,7 @@ services:
         - ./docker-certs/:/app/docker-certs/:ro
         - ./.ssh/:/root/.ssh/:ro
   frontend:
-      image: hoal/frontend
+      image: hoal/frontend:master
       ports:
         - 80:80
         - 443:443
