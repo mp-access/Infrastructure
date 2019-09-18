@@ -71,6 +71,7 @@ services:
       volumes:
         - ./docker-certs/:/app/docker-certs/:ro
         - ./.ssh/:/root/.ssh/:ro
+        - ./backend-config/repositories.json:/app/access/repositories.json
   frontend:
       image: hoal/frontend:master
       ports:
