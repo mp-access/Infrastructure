@@ -1,0 +1,97 @@
+version: '3.0'
+
+volumes:
+  postgres_data:
+      driver: local
+
+services:
+  mailhog:
+    container_name: emailserver
+    image: mailhog/mailhog
+    hostname: mailhog
+    ports:
+      - 1025:1025
+      - 8025:8025
+  postgres:
+      image: postgres
+      container_name: keycloak-db
+      hostname: postgres
+      environment:
+        POSTGRES_DB: keycloak
+        POSTGRES_USER: ${DB_USER}
+        POSTGRES_PASSWORD: ${DB_PASSWORD}
+      volumes:
+        - ./volumes/postgres/data/db:/var/lib/postgresql/data
+  mongo:
+      image: mongo
+      container_name: mongo
+      ports:
+        - 27017:27017
+      environment:
+        MONGO_INITDB_ROOT_USERNAME: ${MONGO_DB_USER}
+        MONGO_INITDB_ROOT_PASSWORD: ${MONGO_DB_PASSWORD}
+      volumes:
+        - ./volumes/mongodb/data/db:/data/db
+  keycloak:
+      image: jboss/keycloak
+      hostname: idp
+      environment:
+        DB_VENDOR: POSTGRES
+        DB_ADDR: postgres
+        DB_DATABASE: keycloak
+        DB_USER: ${DB_USER}
+        DB_SCHEMA: public
+        DB_PASSWORD: ${DB_PASSWORD}
+        PROXY_ADDRESS_FORWARDING: "true"
+        # Uncomment the line below if you want to specify JDBC parameters. The parameter below is just an example, and it shouldn't be used in production without knowledge. It is highly recommended that you read the PostgreSQL JDBC driver documentation in order to use it.
+        #JDBC_PARAMS: "ssl=true"
+      expose:
+        - 8080
+      depends_on:
+        - postgres
+      command:
+      - "-b 0.0.0.0"
+      volumes:
+        - ./keycloak-themes/access:/opt/jboss/keycloak/themes/access
+  course-service:
+      image: hoal/course-service:dev
+      expose:
+        - 8080
+      depends_on:
+        - keycloak
+        - mongo
+      environment:
+        GITHUB_WEBHOOK_SECRET: "${GITHUB_WEBHOOK_SECRET}"
+        GITLAB_WEBHOOK_SECRET: "${GITLAB_WEBHOOK_SECRET}"
+        DOCKER_HOST: "${DOCKER_WORKER_HOST}"
+        DOCKER_CERT_PATH: "/app/docker-certs/"
+        KEYCLOAK_USER: "${KEYCLOAK_USER}"
+        KEYCLOAK_PASSWORD: "${KEYCLOAK_PASSWORD}"
+        KEYCLOAK_HOST: "${AUTH_SERVER}"
+        JWK_URI: "${JWK_URI}"
+        REALM: "${KEYCLOAK_REALM}"
+        MONGO_DB_NAME: ${MONGO_DB_NAME}
+        MONGO_DB_USER: ${MONGO_DB_USER}
+        MONGO_DB_PASSWORD: ${MONGO_DB_PASSWORD}
+        FRONTEND_REALM: ${FRONTEND_REALM}
+        REDIRECT_URI_EMAIL: ${REDIRECT_URI_EMAIL}
+      volumes:
+        - ./docker-certs/:/app/docker-certs/:ro
+        - ./.ssh/:/root/.ssh/:ro
+        - ./backend-config/repositories.json:/app/access/repositories.json
+  frontend:
+      image: hoal/frontend:dev
+      ports:
+        - 80:80
+        - 443:443
+      volumes:
+        - ./nginx/logs/:/etc/nginx/logs/
+        - ./nginx/ssl/:/etc/ssl/info1/:ro
+        - ./nginx/${NGINX_CONF}:/etc/nginx/nginx.conf:ro
+        - ./frontend-config/keycloak-prod.json:/usr/share/nginx/html/keycloak-prod.json
+        - ./frontend-config/mime.types:/etc/nginx/mime.types
+      links:
+        - "course-service:api"
+        - "keycloak:idp"
+      depends_on:
+        - course-service
