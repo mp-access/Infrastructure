@@ -178,3 +178,9 @@ docker-certs/
 .ssh
 
 /volumes
+
+backend-config/
+nginx/logs/
+nginx/ssl/
+
+frontend-config/
