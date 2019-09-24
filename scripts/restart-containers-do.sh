@@ -1,4 +1,4 @@
 docker-compose down
-docker-compose pull frontend
-docker-compose pull course-service
+docker pull hoal/frontend:dev
+docker pull hoal/course-service:dev
 docker-compose -f docker-compose-do.yml up -d
