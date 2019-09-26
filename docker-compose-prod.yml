@@ -15,6 +15,7 @@ services:
         POSTGRES_PASSWORD: ${DB_PASSWORD}
       volumes:
         - ./volumes/postgres/data/db:/var/lib/postgresql/data
+      restart: on-failure
   mongo:
       image: mongo
       container_name: mongo
@@ -25,6 +26,7 @@ services:
         MONGO_INITDB_ROOT_PASSWORD: ${MONGO_DB_PASSWORD}
       volumes:
         - ./volumes/mongodb/data/db:/data/db
+      restart: on-failure
   keycloak:
       image: jboss/keycloak
       hostname: idp
@@ -46,6 +48,7 @@ services:
       - "-b 0.0.0.0"
       volumes:
         - ./keycloak-themes/access:/opt/jboss/keycloak/themes/access
+      restart: on-failure
   course-service:
       image: hoal/course-service:master
       expose:
@@ -72,6 +75,7 @@ services:
         - ./docker-certs/:/app/docker-certs/:ro
         - ./.ssh/:/root/.ssh/:ro
         - ./backend-config/repositories.json:/app/access/repositories.json
+      restart: on-failure
   frontend:
       image: hoal/frontend:master
       ports:
@@ -88,3 +92,4 @@ services:
         - "keycloak:idp"
       depends_on:
         - course-service
+      restart: on-failure
