@@ -10,4 +10,8 @@ then
     [[ "$0" = "$BASH_SOURCE" ]] && exit 1 || return 1 # handle exits from shell or function but don't exit interactive shell
 fi
 
+# Read DB_USER env variable and password
+export $(cat .env | grep "^MONGO_DB_USER=")
+export $(cat .env | grep "^MONGO_DB_PASSWORD=")
+
 docker-compose exec mongo mongorestore -u $MONGO_DB_USER -p $MONGO_DB_PASSWORD $1
