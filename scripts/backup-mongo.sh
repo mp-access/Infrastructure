@@ -4,7 +4,7 @@ if [ "$#" -ne 2 ]; then
     exit 1
 fi
 
-DUMP_FILE="$1-`date +%Y-%m-%d"_"%H_%M_%S`.sql"
+DUMP_FILE="$1-`date +%Y-%m-%d"_"%H_%M_%S`"
 FULL_PATH=$2/$DUMP_FILE
 TMP_FILE="/tmp/$DUMP_FILE"
 BACKUP_PARTITION=$2
