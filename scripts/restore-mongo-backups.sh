@@ -14,7 +14,7 @@ fi
 export $(cat .env | grep "^MONGO_DB_USER=")
 export $(cat .env | grep "^MONGO_DB_PASSWORD=")
 
-docker cp $1 "$(docker-compose ps -q postgres)":$1
+docker cp $1 "$(docker-compose ps -q mongo)":$1
 
 docker-compose exec mongo mongorestore -u $MONGO_DB_USER -p $MONGO_DB_PASSWORD $1
 
