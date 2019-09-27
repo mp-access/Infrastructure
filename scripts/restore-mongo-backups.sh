@@ -13,7 +13,6 @@ fi
 # Read DB_USER env variable and password
 export $(cat .env | grep "^MONGO_DB_USER=")
 export $(cat .env | grep "^MONGO_DB_PASSWORD=")
-
 MONGO_CONTAINER=$(docker-compose ps -q mongo)
 
 docker exec $MONGO_CONTAINER mkdir -p $1
