@@ -14,13 +14,14 @@ fi
 export $(cat .env | grep "^MONGO_DB_USER=")
 export $(cat .env | grep "^MONGO_DB_PASSWORD=")
 
-docker exec $(docker-compose ps -q mongo) mkdir -p $1
+MONGO_CONTAINER=$(docker-compose ps -q mongo)
 
-docker cp $1 "$(docker-compose ps -q mongo)":$1
+docker exec $MONGO_CONTAINER mkdir -p $1
 
-echo "Restoring db $1access/"
-echo "Restoring db $1admin/"
-docker-compose exec mongo mongorestore -u $MONGO_DB_USER -p $MONGO_DB_PASSWORD $1access/
-docker-compose exec mongo mongorestore -u $MONGO_DB_USER -p $MONGO_DB_PASSWORD $1admin/
+docker cp $1. $MONGO_CONTAINER:$1
+
+docker exec $MONGO_CONTAINER ls -l $1
+
+docker-compose exec mongo mongorestore -u $MONGO_DB_USER -p $MONGO_DB_PASSWORD $1
 
 docker-compose exec mongo rm -rf $1
