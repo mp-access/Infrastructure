@@ -17,7 +17,7 @@ services:
         POSTGRES_DB: keycloak
         POSTGRES_USER: ${DB_USER}
         POSTGRES_PASSWORD: ${DB_PASSWORD}
-§        TZ: Europe/Zurich
+        TZ: Europe/Zurich
       volumes:
         - ./volumes/postgres/data/db:/var/lib/postgresql/data
       restart: on-failure
