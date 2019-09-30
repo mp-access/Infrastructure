@@ -17,7 +17,7 @@ echo "Will save backup to $FULL_PATH"
 export $(cat .env | grep "^MONGO_DB_USER=")
 export $(cat .env | grep "^MONGO_DB_PASSWORD=")
 
-echo "Generating backup"
+echo "Generating backup. Connecting as user $MONGO_DB_USER"
 
 # Generate dump and put it into /tmp/dump.sql
 docker-compose exec mongo mongodump -u $MONGO_DB_USER -p $MONGO_DB_PASSWORD --out $TMP_FILE
