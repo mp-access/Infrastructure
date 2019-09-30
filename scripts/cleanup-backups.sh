@@ -4,11 +4,12 @@ if [ "$#" -ne 1 ]; then
     exit 1
 fi
 
+MAX_BACKUPS=12
+
 NUMBER_OF_BACKUPS=$(find "$1" -maxdepth 1 -type d ! -path . | wc -l)
-
 echo "$(date -u) Found $NUMBER_OF_BACKUPS backups"
-
-if [ "$NUMBER_OF_BACKUPS" -ge 12 ]; then
+while [ "$NUMBER_OF_BACKUPS" -ge "$MAX_BACKUPS" ]
+do
     echo "$(date -u) Deleting oldest backup..."
     # Find oldest backup
     IFS= read -r -d $'\0' line < <(find "$1" -maxdepth 1 -type d -printf '%T@ %p\0' 2>/dev/null | sort -z -n)
@@ -16,9 +17,12 @@ if [ "$NUMBER_OF_BACKUPS" -ge 12 ]; then
 
     echo "$(date -u) Found oldest backup: $OLDEST_FILE..."
 
-    rm -rf $OLDEST_FILE
+    rm -rf "$OLDEST_FILE"
 
     echo "$(date -u) Deleted: $OLDEST_FILE. Done"
 
-    exit 1
-fi
+    NUMBER_OF_BACKUPS=$(find "$1" -maxdepth 1 -type d ! -path . | wc -l)
+    echo "$(date -u) Found $NUMBER_OF_BACKUPS backups"
+done
+
+exit 0
