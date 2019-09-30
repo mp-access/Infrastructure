@@ -9,7 +9,7 @@ MAX_BACKUPS=$2
 
 NUMBER_OF_BACKUPS=$(find "$1" -maxdepth 1 -type d ! -path . | wc -l)
 echo "$(date -u) Found $NUMBER_OF_BACKUPS backups"
-while [ "$NUMBER_OF_BACKUPS" -ge "$MAX_BACKUPS" ]
+while [ "$NUMBER_OF_BACKUPS" -gt "$MAX_BACKUPS" ]
 do
     printf "$(date -u)\t%s\n" "Deleting oldest backup..."
     # Find oldest backup
