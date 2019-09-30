@@ -1,5 +1,5 @@
 
-if [ "$#" -ne 1 ]; then
+if [ "$#" -ne 2 ]; then
     echo "[Usage]: cleanup-backups.sh <backup folder> <max backups to keep>"
     exit 1
 fi
