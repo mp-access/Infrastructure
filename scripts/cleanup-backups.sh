@@ -1,3 +1,4 @@
+#!/bin/bash
 
 if [ "$#" -ne 2 ]; then
     echo "[Usage]: cleanup-backups.sh <backup folder> <max backups to keep>"
@@ -26,6 +27,6 @@ do
     printf "$(date -u)\t%s\n" "Found $NUMBER_OF_BACKUPS backups"
 done
 
-echo "Done."
+printf "$(date -u)\t%s\n" "Done."
 
 exit 0
