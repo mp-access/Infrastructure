@@ -1,12 +1,17 @@
 
-NUMBER_OF_BACKUPS=$(find . -maxdepth 1 -type d ! -path . | wc -l)
+if [ "$#" -ne 1 ]; then
+    echo "[Usage]: cleanup-backups.sh <backup folder>"
+    exit 1
+fi
+
+NUMBER_OF_BACKUPS=$(find "$1" -maxdepth 1 -type d ! -path . | wc -l)
 
 echo "$(date -u) Found $NUMBER_OF_BACKUPS backups"
 
 if [ "$NUMBER_OF_BACKUPS" -ge 12 ]; then
     echo "$(date -u) Deleting oldest backup..."
     # Find oldest backup
-    IFS= read -r -d $'\0' line < <(find . -maxdepth 1 -type d -printf '%T@ %p\0' 2>/dev/null | sort -z -n)
+    IFS= read -r -d $'\0' line < <(find "$1" -maxdepth 1 -type d -printf '%T@ %p\0' 2>/dev/null | sort -z -n)
     OLDEST_FILE="${line#* }"
 
     echo "$(date -u) Found oldest backup: $OLDEST_FILE..."
