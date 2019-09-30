@@ -19,10 +19,13 @@ do
 
     rm -rf "$OLDEST_FILE"
 
-    echo "$(date -u) Deleted: $OLDEST_FILE. Done"
+    echo "$(date -u) Deleted: $OLDEST_FILE."
+    echo
 
     NUMBER_OF_BACKUPS=$(find "$1" -maxdepth 1 -type d ! -path . | wc -l)
     echo "$(date -u) Found $NUMBER_OF_BACKUPS backups"
 done
+
+echo "Done."
 
 exit 0
