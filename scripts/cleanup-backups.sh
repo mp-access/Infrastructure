@@ -1,10 +1,10 @@
 
 if [ "$#" -ne 1 ]; then
-    echo "[Usage]: cleanup-backups.sh <backup folder>"
+    echo "[Usage]: cleanup-backups.sh <backup folder> <max backups to keep>"
     exit 1
 fi
 
-MAX_BACKUPS=12
+MAX_BACKUPS=$2
 
 NUMBER_OF_BACKUPS=$(find "$1" -maxdepth 1 -type d ! -path . | wc -l)
 echo "$(date -u) Found $NUMBER_OF_BACKUPS backups"
