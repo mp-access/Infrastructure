@@ -10,20 +10,20 @@ NUMBER_OF_BACKUPS=$(find "$1" -maxdepth 1 -type d ! -path . | wc -l)
 echo "$(date -u) Found $NUMBER_OF_BACKUPS backups"
 while [ "$NUMBER_OF_BACKUPS" -ge "$MAX_BACKUPS" ]
 do
-    echo "$(date -u) Deleting oldest backup..."
+    printf "$(date -u)\t%s\n" "Deleting oldest backup..."
     # Find oldest backup
     IFS= read -r -d $'\0' line < <(find "$1" -maxdepth 1 -type d -printf '%T@ %p\0' 2>/dev/null | sort -z -n)
     OLDEST_FILE="${line#* }"
 
-    echo "$(date -u) Found oldest backup: $OLDEST_FILE..."
+    printf "$(date -u)\t%s\n" "Found oldest backup: $OLDEST_FILE..."
 
     rm -rf "$OLDEST_FILE"
 
-    echo "$(date -u) Deleted: $OLDEST_FILE."
+    printf "$(date -u)\t%s\n" "Deleted: $OLDEST_FILE."
     echo
 
     NUMBER_OF_BACKUPS=$(find "$1" -maxdepth 1 -type d ! -path . | wc -l)
-    echo "$(date -u) Found $NUMBER_OF_BACKUPS backups"
+    printf "$(date -u)\t%s\n" "Found $NUMBER_OF_BACKUPS backups"
 done
 
 echo "Done."
