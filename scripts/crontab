@@ -1,11 +1,11 @@
 # Every 5 minutes create a backup but keep at most 12 backups -> keep 1 backup for every 5 minute for the last hour
-*/5 * * * * cd /root/access/infrastructure && ./scripts/backup-mongo.sh mongo backups/5mins >> ./backup-cron.log 2>&1
-*/5 * * * * cd /root/access/infrastructure && ./scripts/cleanup-backups.sh /root/access/infrastructure/backups/5mins 12 >> ./backup-cron.log 2>&1
+*/5 * * * * printf "$(date -u)\t%s\n" "Starting 5 min backup" && cd /root/access/infrastructure && ./scripts/backup-mongo.sh mongo backups/5mins >> ./backup-cron.log 2>&1
+*/5 * * * * printf "$(date -u)\t%s\n" "Starting 5 min cleanup" && cd /root/access/infrastructure && ./scripts/cleanup-backups.sh /root/access/infrastructure/backups/5mins 12 >> ./backup-cron.log 2>&1
 
 # Every 1 hour create a backup but keep at most 24 backups -> keep 1 backup per hour for the last 24 hours
-0 */1 * * * cd /root/access/infrastructure && ./scripts/backup-mongo.sh mongo backups/hourly >> ./backup-cron.log 2>&1
-0 */1 * * * cd /root/access/infrastructure && ./scripts/cleanup-backups.sh /root/access/infrastructure/backups/hourly 24 >> ./backup-cron.log 2>&1
+0 */1 * * * printf "$(date -u)\t%s\n" "Starting hourly backup" && cd /root/access/infrastructure && ./scripts/backup-mongo.sh mongo backups/hourly >> ./backup-cron.log 2>&1
+0 */1 * * * printf "$(date -u)\t%s\n" "Starting hourly cleanup" && cd /root/access/infrastructure && ./scripts/cleanup-backups.sh /root/access/infrastructure/backups/hourly 24 >> ./backup-cron.log 2>&1
 
 # Every 24 hour create a backup but keep at most 2 backups -> keep 1 backup per day for the last 2 days
-0 0 */1 * * cd /root/access/infrastructure && ./scripts/backup-mongo.sh mongo backups/hourly >> ./backup-cron.log 2>&1
-0 0 */1 * * cd /root/access/infrastructure && ./scripts/cleanup-backups.sh /root/access/infrastructure/backups/hourly 2 >> ./backup-cron.log 2>&1
+0 0 */1 * * printf "$(date -u)\t%s\n" "Starting daily backup" && cd /root/access/infrastructure && ./scripts/backup-mongo.sh mongo backups/hourly >> ./backup-cron.log 2>&1
+0 0 */1 * * printf "$(date -u)\t%s\n" "Starting daily cleanup" && cd /root/access/infrastructure && ./scripts/cleanup-backups.sh /root/access/infrastructure/backups/hourly 2 >> ./backup-cron.log 2>&1
