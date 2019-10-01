@@ -16,3 +16,4 @@ BACKUPS=/home/info1-mngr/Infrastructure
 
 # Backup idp daily
 0 4 * * * cd $ACCESS_HOME && ./scripts/backup-postgres.sh postgres backup-tmp/idp >> ./backup-cron.log 2>&1
+0 4 * * * cd $ACCESS_HOME && ./scripts/cleanup-backups.sh $ACCESS_HOME/backup-tmp/idp 5 >> ./backup-cron.log 2>&1
