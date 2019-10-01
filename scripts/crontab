@@ -1,4 +1,5 @@
 ACCESS_HOME=/home/info1-mngr/Infrastructure
+BACKUPS=/home/info1-mngr/Infrastructure
 # m h  dom mon dow   command
 
 # Every 5 minutes create a backup but keep at most 12 backups -> keep 1 backup for every 5 minute for the last hour
@@ -12,3 +13,6 @@ ACCESS_HOME=/home/info1-mngr/Infrastructure
 # Every 24 hour create a backup but keep at most 2 backups -> keep 1 backup per day for the last 3 days
 0 0 */1 * * cd $ACCESS_HOME && ./scripts/backup-mongo.sh mongo backup-tmp/daily >> ./backup-cron.log 2>&1
 0 0 */1 * * cd $ACCESS_HOME && ./scripts/cleanup-backups.sh $ACCESS_HOME/backup-tmp/daily 3 >> ./backup-cron.log 2>&1
+
+# Backup idp daily
+0 4 * * * cd $ACCESS_HOME && ./scripts/backup-postgres.sh postgres backup-tmp/idp >> ./backup-cron.log 2>&1

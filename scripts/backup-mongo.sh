@@ -9,7 +9,6 @@ echo "$(date -u) Running mongodb backup script"
 DUMP_FILE="$1-`date +%Y-%m-%d"_"%H_%M_%S`"
 FULL_PATH=$2/$DUMP_FILE
 TMP_FILE="/tmp/$DUMP_FILE"
-BACKUP_PARTITION=$2
 
 echo "$(date -u) Will save backup to $FULL_PATH"
 
