@@ -84,6 +84,7 @@ services:
         - ./docker-certs/:/app/docker-certs/:ro
         - ./.ssh/:/root/.ssh/:ro
         - ./backend-config/repositories.json:/app/access/repositories.json
+        - ./logs/:/app/logs/
       restart: on-failure
   frontend:
       image: hoal/frontend:dev
