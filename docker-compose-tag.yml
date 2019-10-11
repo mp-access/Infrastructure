@@ -114,4 +114,4 @@ services:
         - web-root:/var/www/html
       depends_on:
         - frontend
-      command: certonly --webroot --webroot-path=/var/www/html --email $ADMIN_EMAIL --agree-tos --no-eff-email --staging -d $HOSTNAME  -d $www.HOSTNAME
+      command: certonly --webroot --webroot-path=/var/www/html --email $ADMIN_EMAIL --agree-tos --no-eff-email --staging -d $HOSTNAME  -d www.$HOSTNAME
