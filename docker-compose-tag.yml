@@ -113,5 +113,5 @@ services:
         - certbot-var:/var/lib/letsencrypt
         - web-root:/var/www/html
       depends_on:
-        - webserver
+        - frontend
       command: "certonly --webroot --webroot-path=/var/www/html --email ${ADMIN_EMAIL} --agree-tos --no-eff-email --staging -d ${HOSTNAME}  -d {www.HOSTNAME}"
