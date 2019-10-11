@@ -95,7 +95,7 @@ services:
         TZ: Europe/Zurich
       volumes:
         - ./nginx/logs/:/etc/nginx/logs/
-        - ./nginx/ssl/:/etc/ssl/info1/:ro
+        - ./nginx/ssl/:/etc/ssl/info1/
         - ./nginx/${NGINX_CONF}:/etc/nginx/nginx.conf
         - ./frontend-config/keycloak-prod.json:/usr/share/nginx/html/keycloak-prod.json
         - ./frontend-config/mime.types:/etc/nginx/mime.types
