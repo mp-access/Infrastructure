@@ -1,0 +1,8 @@
+{
+  "realm": "access",
+  "auth-server-url": "/auth",
+  "ssl-required": "external",
+  "resource": "access-frontend",
+  "public-client": true,
+  "confidential-port": 0
+}
