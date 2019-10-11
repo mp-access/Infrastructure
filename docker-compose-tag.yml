@@ -96,7 +96,7 @@ services:
       volumes:
         - ./nginx/logs/:/etc/nginx/logs/
         - ./nginx/ssl/:/etc/ssl/info1/:ro
-        - ./nginx/${NGINX_CONF}:/etc/nginx/nginx.conf:ro
+        - ./nginx/${NGINX_CONF}:/etc/nginx/nginx.conf
         - ./frontend-config/keycloak-prod.json:/usr/share/nginx/html/keycloak-prod.json
         - ./frontend-config/mime.types:/etc/nginx/mime.types
       links:
