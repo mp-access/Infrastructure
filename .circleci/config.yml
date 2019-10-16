@@ -10,7 +10,7 @@ jobs:
       - run:
           name: Deploy Over SSH
           command: |
-            ssh -o StrictHostKeyChecking=no $DIGITAL_OCEAN_USER@$DIGITAL_OCEAN_HOST "cd /root/access/infrastructure && git pull && sh ./scripts/restart-containers-do.sh"
+            ssh -o StrictHostKeyChecking=no $DIGITAL_OCEAN_USER@$DIGITAL_OCEAN_HOST "cd /root/Infrastructure && git pull && sh ./scripts/restart-containers-do.sh"
 
 workflows:
   version: 2
