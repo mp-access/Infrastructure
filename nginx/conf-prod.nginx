@@ -123,6 +123,11 @@ http {
             try_files $uri /index.html;
         }
 
+        location /keycloak-prod.json {
+            include  mime.types;
+            try_files keycloak-prod.json =404;
+        }
+
         location /api {
             proxy_pass http://course-service:8080/api;
             proxy_set_header Host $host:$server_port;
