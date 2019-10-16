@@ -125,7 +125,12 @@ http {
 
         location /keycloak-prod.json {
             include  mime.types;
-            try_files /keycloak-prod.json =404;
+            try_files /keycloak-prod.json /keycloak.json =404;
+        }
+
+        location /test {
+            include  mime.types;
+            try_files /keycloak-prod.json /keycloak.json =404;
         }
 
         location /api {
