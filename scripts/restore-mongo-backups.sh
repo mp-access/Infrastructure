@@ -19,6 +19,6 @@ docker exec $MONGO_CONTAINER mkdir -p $1
 
 docker cp $1. $MONGO_CONTAINER:$1
 
-docker-compose exec mongo mongorestore -u $MONGO_DB_USER -p $MONGO_DB_PASSWORD $1
+docker-compose exec mongo mongorestore -u $MONGO_DB_USER -p $MONGO_DB_PASSWORD --gzip $1
 
 docker-compose exec mongo rm -rf $1

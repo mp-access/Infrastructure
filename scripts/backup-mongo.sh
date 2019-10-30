@@ -19,7 +19,7 @@ export $(cat .env | grep "^MONGO_DB_PASSWORD=")
 echo "$(date -u) Generating backup. Connecting as user $MONGO_DB_USER"
 
 # Generate dump and put it into /tmp/dump.sql
-/usr/local/bin/docker-compose exec -T mongo mongodump -u $MONGO_DB_USER -p $MONGO_DB_PASSWORD --out $TMP_FILE
+/usr/local/bin/docker-compose exec -T mongo mongodump -u $MONGO_DB_USER -p $MONGO_DB_PASSWORD --out $TMP_FILE --gzip
 
 echo "$(date -u) Setting correct user permissions"
 
