@@ -7,7 +7,7 @@ services:
       hostname: postgres
       image: postgres
       volumes:
-        - ./volumes/postgres/data/db:/var/lib/postgresql/data
+        - postgresdata:/var/lib/postgresql/data
       environment:
         POSTGRES_DB: keycloak
         POSTGRES_USER: keycloak
@@ -18,7 +18,7 @@ services:
       ports:
         - 27017:27017
       volumes:
-        - ./volumes/mongodb/data/db:/data/db
+        - mongodata:/data/db
   mailhog:
       container_name: emailserver
       image: mailhog/mailhog
@@ -54,3 +54,6 @@ services:
         - ./keycloak-themes/access:/opt/jboss/keycloak/themes/access
       links:
         - "mailhog:email.server"
+volumes:
+  mongodata:
+  postgresdata:
