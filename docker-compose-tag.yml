@@ -22,7 +22,7 @@ services:
         - ./volumes/postgres/data/db:/var/lib/postgresql/data
       restart: on-failure
   mongo:
-      image: mongo
+      image: mongo:4.2.1-bionic
       container_name: mongo
       expose:
         - 27017
