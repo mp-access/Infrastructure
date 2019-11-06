@@ -10,7 +10,7 @@ services:
       - 1025:1025
       - 8025:8025
   postgres:
-      image: postgres
+      image: postgres:11-alpine
       container_name: keycloak-db
       hostname: postgres
       environment:
