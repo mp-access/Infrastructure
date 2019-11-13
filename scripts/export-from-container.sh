@@ -1,2 +1,0 @@
-docker exec -it "$1" keycloak/bin/standalone.sh -Dkeycloak.migration.action=export -Dkeycloak.migration.provider=singleFile -Dkeycloak.migration.file=keycloak-export.json -Djboss.http.port=8888 -Djboss.https.port=22222 -Djboss.management.http.port=7777
-docker cp "$1":/opt/jboss/keycloak-export.json .
