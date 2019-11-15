@@ -13,6 +13,9 @@ services:
     image: hoal/analytics-backend:master
     expose:
       - 4000
+    environment:
+      - MONGO_DB_USERNAME: ${ANALYTICS_MONGO_DB_USERNAME}
+      - MONGO_DB_PASSWORD: ${ANALYTICS_MONGO_DB_PASSWORD}
     restart: on-failure
   analytics-frontend:
     image: hoal/analytics-frontend:master
