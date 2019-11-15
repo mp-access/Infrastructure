@@ -10,7 +10,7 @@ services:
       - ./frontend-config/keycloak-prod.json:/usr/share/nginx/html/keycloak-prod.json
       - ./frontend-config/mime.types:/etc/nginx/mime.types
   analytics-backend:
-    image: hoal/analytics-frontend:master
+    image: hoal/analytics-backend:master
     expose:
       - 4000
     restart: on-failure
