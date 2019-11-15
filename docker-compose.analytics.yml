@@ -2,6 +2,13 @@ version: '3.0'
 
 
 services:
+  frontend:
+    volumes:
+      - ./nginx/logs/:/etc/nginx/logs/
+      - ./nginx/ssl/:/etc/ssl/info1/
+      - ./nginx/conf-analytics.nginx:/etc/nginx/nginx.conf
+      - ./frontend-config/keycloak-prod.json:/usr/share/nginx/html/keycloak-prod.json
+      - ./frontend-config/mime.types:/etc/nginx/mime.types
   analytics-backend:
     image: hoal/analytics-frontend:master
     expose:

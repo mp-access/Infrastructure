@@ -99,7 +99,6 @@ http {
         ssl_session_cache shared:SSL:10m;
         ssl_session_timeout 10m;
 
-
         charset utf-8;
         gzip on;
         access_log /etc/nginx/logs/nginx-access.log compression buffer=32k;
@@ -131,6 +130,14 @@ http {
             proxy_set_header    X-Forwarded-Server $host;
             proxy_set_header    X-Forwarded-Port   $server_port;
             proxy_set_header    X-Forwarded-Proto  $scheme;
+        }
+
+        location /analytics {
+            proxy_pass http://analytics-frontend/;
+        }
+
+        location /metrics {
+            proxy_pass http://analytics-backend:4000/;
         }
     }
 }
