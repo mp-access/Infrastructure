@@ -1,3 +1,8 @@
+if [ "$#" -ne 3 ]; then
+    echo "[Usage]: create-mongo-user-read-only.sh <username> <password> <db>"
+    exit 1
+fi
+
 USERNAME=$1
 PASSWORD=$2
 DB=$3
