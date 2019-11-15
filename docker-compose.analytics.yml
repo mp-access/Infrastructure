@@ -1,0 +1,14 @@
+version: '3.0'
+
+
+services:
+  analytics-backend:
+    image: hoal/analytics-frontend:master
+    expose:
+      - 4000
+    restart: on-failure
+  analytics-frontend:
+    image: hoal/analytics-frontend:master
+    expose:
+      - 80
+    restart: on-failure
