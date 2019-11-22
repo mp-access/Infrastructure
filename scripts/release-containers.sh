@@ -2,7 +2,7 @@ IMAGE=$1
 VERSION=$2
 
 echo "Pulling master container of $IMAGE and tagging as follows: 'latest', '$VERSION', '$VERSION-master'"
-read -p "Confirm [Y/n]" -n 1 -r
+read -p "Confirm [Y/n] " -n 1 -r
 echo    # (optional) move to a new line
 if [[ ! $REPLY =~ ^[Yy]$ ]]
 then
