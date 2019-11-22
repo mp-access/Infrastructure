@@ -1,8 +1,12 @@
 IMAGE=$1
 VERSION=$2
 
-echo "Pulling master container of $IMAGE and tagging as follows: 'latest', '$VERSION', '$VERSION-master'"
-read -p "Confirm [Y/n] " -n 1 -r
+TAG1="latest"
+TAG2="$VERSION"
+TAG3="$VERSION-master"
+
+echo "Pulling master container of $IMAGE and tagging as follows: '$TAG1', '$TAG2', '$TAG3'"
+read -p "Confirm? [Y/n] " -n 1 -r
 echo    # (optional) move to a new line
 if [[ ! $REPLY =~ ^[Yy]$ ]]
 then
@@ -12,6 +16,18 @@ fi
 docker pull "$IMAGE:master"
 IMAGE_ID=$(docker images "$IMAGE:master" -q)
 echo "$IMAGE_ID"
-docker tag "$IMAGE_ID" "$IMAGE:latest"
-docker tag "$IMAGE_ID" "$IMAGE:$VERSION"
-docker tag "$IMAGE_ID" "$IMAGE:$VERSION-master"
+docker tag "$IMAGE_ID" "$IMAGE:$TAG1"
+docker tag "$IMAGE_ID" "$IMAGE:$TAG2"
+docker tag "$IMAGE_ID" "$IMAGE:$TAG3"
+
+echo "Push to docker hub images '$IMAGE:$TAG1' '$IMAGE:$TAG2' '$IMAGE:$TAG3'"
+read -p "Push to docker hub? [Y/n] " -n 1 -r
+echo    # (optional) move to a new line
+if [[ ! $REPLY =~ ^[Yy]$ ]]
+then
+    [[ "$0" = "$BASH_SOURCE" ]] && exit 1 || return 1 # handle exits from shell or function but don't exit interactive shell
+fi
+
+docker push "$IMAGE:$TAG1"
+docker push "$IMAGE:$TAG2"
+docker push "$IMAGE:$TAG3"
