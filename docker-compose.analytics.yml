@@ -20,6 +20,8 @@ services:
       MONGO_DB_USERNAME: ${ANALYTICS_MONGO_DB_USERNAME}
       MONGO_DB_PASSWORD: ${ANALYTICS_MONGO_DB_PASSWORD}
     restart: on-failure
+    depends_on:
+      - mongo
   analytics-frontend:
     image: hoal/analytics-frontend:master
     expose:
