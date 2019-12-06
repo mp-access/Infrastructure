@@ -9,6 +9,9 @@ services:
       - ./nginx/conf-analytics.nginx:/etc/nginx/nginx.conf
       - ./frontend-config/keycloak-prod.json:/usr/share/nginx/html/keycloak-prod.json
       - ./frontend-config/mime.types:/etc/nginx/mime.types
+    depends_on:
+      - analytics-backend
+      - analytics-frontend
   analytics-backend:
     image: hoal/analytics-backend:master
     expose:
