@@ -2,13 +2,6 @@ version: '3.0'
 
 
 services:
-  mailhog:
-    container_name: emailserver
-    image: mailhog/mailhog
-    hostname: mailhog
-    ports:
-      - 1025:1025
-      - 8025:8025
   postgres:
       image: postgres:11-alpine
       container_name: keycloak-db
@@ -22,7 +15,7 @@ services:
         - ./volumes/postgres/data/db:/var/lib/postgresql/data
       restart: on-failure
   mongo:
-      image: mongo:4.2.1-bionic
+      image: mongo:4.2.0-bionic
       container_name: mongo
       expose:
         - 27017
@@ -34,7 +27,7 @@ services:
         - ./volumes/mongodb/data/db:/data/db
       restart: on-failure
   keycloak:
-      image: jboss/keycloak
+      image: jboss/keycloak:7.0.0
       hostname: idp
       environment:
         DB_VENDOR: POSTGRES

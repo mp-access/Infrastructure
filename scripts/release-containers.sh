@@ -1,3 +1,7 @@
+if [ "$#" -ne 2 ]; then
+    echo "[Usage]: ./release-containers <image> <version>"
+    exit 1
+fi
 IMAGE=$1
 VERSION=$2
 
@@ -6,6 +10,8 @@ TAG2="$VERSION"
 TAG3="$VERSION-master"
 
 echo "Pulling master container of $IMAGE and tagging as follows: '$TAG1', '$TAG2', '$TAG3'"
+echo "\nPlease verify on https://hub.docker.com/repository/docker/$IMAGE that the digest matches with the version you want to release"
+
 read -p "Confirm? [Y/n] " -n 1 -r
 echo    # (optional) move to a new line
 if [[ ! $REPLY =~ ^[Yy]$ ]]
