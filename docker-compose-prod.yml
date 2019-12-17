@@ -13,7 +13,7 @@ services:
         TZ: Europe/Zurich
       volumes:
         - ./volumes/postgres/data/db:/var/lib/postgresql/data
-      restart: on-failure
+      restart: always
   mongo:
       image: mongo
       container_name: mongo
@@ -25,7 +25,7 @@ services:
         TZ: Europe/Zurich
       volumes:
         - ./volumes/mongodb/data/db:/data/db
-      restart: on-failure
+      restart: always
   keycloak:
       image: jboss/keycloak
       hostname: idp
@@ -48,7 +48,7 @@ services:
       - "-b 0.0.0.0"
       volumes:
         - ./keycloak-themes/access:/opt/jboss/keycloak/themes/access
-      restart: on-failure
+      restart: always
   course-service:
       image: hoal/course-service:master
       expose:
@@ -78,7 +78,7 @@ services:
         - ./.ssh/:/root/.ssh/:ro
         - ./backend-config/repositories.json:/app/access/repositories.json
         - ./logs/:/app/logs/
-      restart: on-failure
+      restart: always
   frontend:
       image: hoal/frontend:master
       ports:
@@ -97,4 +97,4 @@ services:
         - "keycloak:idp"
       depends_on:
         - course-service
-      restart: on-failure
+      restart: always
