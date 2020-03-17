@@ -1,0 +1,190 @@
+---
+- hosts: test
+  gather_facts: yes
+  become: yes
+  become_user: root
+  vars_files:
+    - ../vars/provision.yml
+  
+  tasks:
+    - name: Install aptitude using apt
+      apt: name=aptitude state=latest update_cache=yes force_apt_get=yes
+
+    - name: Install required system packages
+      apt: name={{ item }} state=latest update_cache=yes
+      loop: [ 'apt-transport-https', 'ca-certificates', 'curl', 'software-properties-common', 'python3-pip', 'virtualenv', 'python3-setuptools']
+
+    - name: Add Docker GPG apt Key
+      apt_key:
+        url: https://download.docker.com/linux/ubuntu/gpg
+        state: present
+
+    - name: Add Docker Repository
+      apt_repository:
+        repo: deb https://download.docker.com/linux/ubuntu bionic stable
+        state: present
+
+    - name: Update apt and install docker-ce
+      apt: update_cache=yes name=docker-ce state=latest
+
+    - name: Install Docker Module for Python
+      pip:
+        name: docker==4.2.0
+        state: present
+
+    - name: Install compose
+      pip:
+        name: docker-compose==1.25.4
+        state: present
+
+    - name: Pull default Docker image
+      docker_image:
+        name: "{{ default_container_image }}"
+        source: pull
+
+    - name: Test Docker installation with hello-world
+      docker_container:
+        name: helloWorld
+        image: "{{ default_container_image }}:latest"
+
+    - name: Add the user 'access' with a primary group of 'docker'
+      user:
+        name: access
+        comment: ACCESS user
+        group: docker
+        shell: /bin/bash
+        append: yes
+        state: present
+
+- hosts: testWorker
+  gather_facts: yes
+  become: yes
+  become_user: root
+  vars_files:
+    - ../vars/provision.yml
+        
+  tasks:
+    - name: Create docker.service.d folder
+      file:
+        path: /etc/systemd/system/docker.service.d/
+        state: directory
+    - name: Copy Docker service file to worker
+      copy:
+        src: ../files/unprotected_docker.service.d
+        dest: /etc/systemd/system/docker.service.d/override.conf
+    - name: Restart Docker service to apply changes
+      shell: |
+        systemctl daemon-reload
+        systemctl restart docker.service
+        systemctl enable docker
+        netstat -lntp | grep dockerd
+      register: out
+    - debug: var=out.stdout_lines
+  tags:
+    - worker-service
+
+- hosts: testAccess
+  gather_facts: yes
+  become: yes
+  become_user: access
+  
+  tasks:
+    - name: Clone or pull repository
+      git:
+        repo: 'https://github.com/mp-access/Infrastructure.git'
+        dest: ~/access
+        version: HEAD
+  
+    - name: Create .env file
+      copy:
+        src: ../files/env.example
+        dest: ~/access/.env
+    
+    - name: Create backend configs folder 
+      file:
+        path: ~/access/backend-config
+        state: directory
+    
+    - name: Create repositories.json file 
+      copy:
+        src: ../files/repositories.json.example
+        dest: ~/access/backend-config/repositories.json
+      
+    - name: Create logs folder
+      file:
+        path: ~/access/logs
+        state: directory
+
+    - name: Create mongoDB folder
+      file:
+        path: ~/access/volumes/mongodb
+        state: directory
+    
+    - name: Create Postgres folder
+      file:
+        path: ~/access/volumes/postgress
+        state: directory
+
+    - name: Create nginx ssl folder
+      file:
+        path: ~/access/nginx/ssl/
+        state: directory
+    
+    - name: Create frontend ssl key pair
+      shell: openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout ~/access/nginx/ssl/server.key -out ~/access/nginx/ssl/server.crt -subj "/C=CH/ST=Zuerich/L=Zuerich/O=ACCESS/OU=ACCESS/CN=192.168.205.10"
+
+    - name: Start ACCESS
+      docker_compose:
+        project_src: ~/access
+        files: docker-compose-tag.yml
+      register: output
+  tags:
+    - access-deploy
+
+- hosts: testAccess
+  gather_facts: yes
+  become: yes
+  become_user: access
+  
+  tasks:
+
+      - name: Get container IP
+        script: 
+          cmd: ../files/keycloak-ip.sh
+          chdir: /home/access/access
+        register: containerIp
+      
+      - debug: var=containerIp.stdout_lines
+
+      - name: Add keycloak user
+        shell: |
+          docker-compose -f ~/access/docker-compose-tag.yml exec keycloak bash -c "/opt/jboss/keycloak/bin/add-user-keycloak.sh -r master -u admin -p admin"
+          docker-compose -f ~/access/docker-compose-tag.yml restart keycloak
+        register: out
+
+      - name: Wait 90 seconds for keycloak connection to become reachable/usable
+        wait_for:
+          host: "{{ containerIp.stdout_lines[0] }}"
+          delay: 20
+          port: 8080
+          timeout: 90
+
+      - name: Copy realm provisioning script
+        copy:
+          src: ../files/access-realm-config.sh
+          dest: ~/access/access-realm-config.sh
+
+      - name: Add and configure realm
+        shell: |
+          docker cp ~/access/access-realm-config.sh $(docker-compose -f ~/access/docker-compose-tag.yml ps -q keycloak):/opt/jboss/keycloak
+          docker-compose -f ~/access/docker-compose-tag.yml exec keycloak bash -c "sh /opt/jboss/keycloak/access-realm-config.sh"
+        register: out
+
+      - debug: var=out.stdout_lines
+
+      - name: Restart Course service to enroll students
+        shell: |
+          docker-compose -f ~/access/docker-compose-tag.yml restart course-service
+
+  tags:
+      - keycloak

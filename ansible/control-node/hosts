@@ -1,0 +1,20 @@
+[alpm]
+access-dev ansible_host=104.248.37.22
+access-worker ansible_host=167.71.53.88
+
+[alpm:vars]
+ansible_python_interpreter=/usr/bin/python3
+
+[test]
+access-test ansible_host=192.168.205.10
+access-test-worker ansible_host=192.168.205.11
+
+[testAccess]
+access-test ansible_host=192.168.205.10
+
+[testWorker]
+access-test-worker ansible_host=192.168.205.11
+
+[test:vars]
+ansible_ssh_user=vagrant
+ansible_python_interpreter=/usr/bin/python3

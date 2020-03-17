@@ -36,12 +36,20 @@ services:
         DB_USER: ${DB_USER}
         DB_SCHEMA: public
         DB_PASSWORD: ${DB_PASSWORD}
+        KEYCLOAK_USER: "${KEYCLOAK_USER}"
+        KEYCLOAK_PASSWORD: "${KEYCLOAK_PASSWORD}"
         PROXY_ADDRESS_FORWARDING: "true"
         TZ: Europe/Zurich
         # Uncomment the line below if you want to specify JDBC parameters. The parameter below is just an example, and it shouldn't be used in production without knowledge. It is highly recommended that you read the PostgreSQL JDBC driver documentation in order to use it.
         #JDBC_PARAMS: "ssl=true"
       expose:
         - 8080
+      healthcheck:
+        test: ["CMD", "curl", "-f", "http://localhost:8080/auth"]
+        interval: 30s
+        timeout: 10s
+        retries: 3
+        start_period: 40s
       depends_on:
         - postgres
       command:
