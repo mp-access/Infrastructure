@@ -1,7 +1,7 @@
 #/bin/bash
 set -ex
 
-/opt/jboss/keycloak/bin/kcadm.sh config credentials --server http://localhost:8080/auth --realm master --user admin --password admin --client admin-cli
+/opt/jboss/keycloak/bin/kcadm.sh config credentials --server http://localhost:8080/auth --realm master --user $KEYCLOAK_USER --password $KEYCLOAK_PASSWORD --client admin-cli
 
 /opt/jboss/keycloak/bin/kcadm.sh create realms -s realm=access -s enabled=true -s actionTokenGeneratedByAdminLifespan=432000 -s emailTheme=access -o
 

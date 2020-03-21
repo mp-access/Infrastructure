@@ -29,12 +29,12 @@
 
     - name: Install Docker Module for Python
       pip:
-        name: docker==4.2.0
+        name: docker=={{ docker_version }}
         state: present
 
     - name: Install compose
       pip:
-        name: docker-compose==1.25.4
+        name: docker-compose=={{ docker_compose_version }}
         state: present
 
     - name: Pull default Docker image
@@ -55,6 +55,8 @@
         shell: /bin/bash
         append: yes
         state: present
+  tags: 
+    - docker-installation
 
 - hosts: testWorker
   gather_facts: yes
@@ -64,20 +66,24 @@
     - ../vars/provision.yml
         
   tasks:
+    - name: Copy docker daemon.json file
+      template:
+        src: ../files/docker-daemon.json.j2
+        dest: /etc/docker/daemon.json
     - name: Create docker.service.d folder
       file:
         path: /etc/systemd/system/docker.service.d/
         state: directory
-    - name: Copy Docker service file to worker
+    - name: Override default docker service file to be usable with daemon.json
       copy:
-        src: ../files/unprotected_docker.service.d
-        dest: /etc/systemd/system/docker.service.d/override.conf
+        src: ../files/no_host_docker.service.d
+        dest: /etc/systemd/system/docker.service.d/docker.conf
     - name: Restart Docker service to apply changes
       shell: |
         systemctl daemon-reload
         systemctl restart docker.service
         systemctl enable docker
-        netstat -lntp | grep dockerd
+        netstat -tulnp | grep dockerd
       register: out
     - debug: var=out.stdout_lines
   tags:
@@ -87,17 +93,19 @@
   gather_facts: yes
   become: yes
   become_user: access
+  vars_files:
+    - ../vars/provision.yml
   
   tasks:
     - name: Clone or pull repository
       git:
-        repo: 'https://github.com/mp-access/Infrastructure.git'
+        repo: "{{ access_infrastructure_repo }}"
         dest: ~/access
         version: HEAD
   
     - name: Create .env file
       copy:
-        src: ../files/env.example
+        src: ../files/env.j2
         dest: ~/access/.env
     
     - name: Create backend configs folder 
@@ -131,7 +139,7 @@
         state: directory
     
     - name: Create frontend ssl key pair
-      shell: openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout ~/access/nginx/ssl/server.key -out ~/access/nginx/ssl/server.crt -subj "/C=CH/ST=Zuerich/L=Zuerich/O=ACCESS/OU=ACCESS/CN=192.168.205.10"
+      shell: openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout ~/access/nginx/ssl/server.key -out ~/access/nginx/ssl/server.crt -subj "/C=CH/ST=Zuerich/L=Zuerich/O=ACCESS/OU=ACCESS/CN={{ inventory_hostname }}"
 
     - name: Start ACCESS
       docker_compose:
@@ -145,6 +153,8 @@
   gather_facts: yes
   become: yes
   become_user: access
+  vars_files:
+    - ../vars/provision.yml
   
   tasks:
 
@@ -158,7 +168,7 @@
 
       - name: Add keycloak user
         shell: |
-          docker-compose -f ~/access/docker-compose-tag.yml exec keycloak bash -c "/opt/jboss/keycloak/bin/add-user-keycloak.sh -r master -u admin -p admin"
+          docker-compose -f ~/access/docker-compose-tag.yml exec keycloak bash -c "/opt/jboss/keycloak/bin/add-user-keycloak.sh -r master -u {{ keycloak_user }} -p {{ keycloak_password }}"
           docker-compose -f ~/access/docker-compose-tag.yml restart keycloak
         register: out
 
