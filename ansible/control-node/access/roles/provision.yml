@@ -101,7 +101,7 @@
       git:
         repo: "{{ access_infrastructure_repo }}"
         dest: ~/access
-        version: HEAD
+        version: ansible
   
     - name: Create .env file
       copy:
