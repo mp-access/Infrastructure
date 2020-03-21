@@ -104,7 +104,7 @@
         version: ansible
   
     - name: Create .env file
-      copy:
+      template:
         src: ../files/env.j2
         dest: ~/access/.env
     
@@ -157,44 +157,43 @@
     - ../vars/provision.yml
   
   tasks:
+    - name: Get container IP
+      script: 
+        cmd: ../files/keycloak-ip.sh
+        chdir: /home/access/access
+      register: containerIp
+    
+    - debug: var=containerIp.stdout_lines
 
-      - name: Get container IP
-        script: 
-          cmd: ../files/keycloak-ip.sh
-          chdir: /home/access/access
-        register: containerIp
-      
-      - debug: var=containerIp.stdout_lines
+    - name: Add keycloak user
+      shell: |
+        docker-compose -f ~/access/docker-compose-tag.yml exec keycloak bash -c "/opt/jboss/keycloak/bin/add-user-keycloak.sh -r master -u {{ keycloak_user }} -p {{ keycloak_password }}"
+        docker-compose -f ~/access/docker-compose-tag.yml restart keycloak
+      register: out
 
-      - name: Add keycloak user
-        shell: |
-          docker-compose -f ~/access/docker-compose-tag.yml exec keycloak bash -c "/opt/jboss/keycloak/bin/add-user-keycloak.sh -r master -u {{ keycloak_user }} -p {{ keycloak_password }}"
-          docker-compose -f ~/access/docker-compose-tag.yml restart keycloak
-        register: out
+    - name: Wait 90 seconds for keycloak connection to become reachable/usable
+      wait_for:
+        host: "{{ containerIp.stdout_lines[0] }}"
+        delay: 20
+        port: 8080
+        timeout: 90
 
-      - name: Wait 90 seconds for keycloak connection to become reachable/usable
-        wait_for:
-          host: "{{ containerIp.stdout_lines[0] }}"
-          delay: 20
-          port: 8080
-          timeout: 90
+    - name: Copy realm provisioning script
+      copy:
+        src: ../files/access-realm-config.sh
+        dest: ~/access/access-realm-config.sh
 
-      - name: Copy realm provisioning script
-        copy:
-          src: ../files/access-realm-config.sh
-          dest: ~/access/access-realm-config.sh
+    - name: Add and configure realm
+      shell: |
+        docker cp ~/access/access-realm-config.sh $(docker-compose -f ~/access/docker-compose-tag.yml ps -q keycloak):/opt/jboss/keycloak
+        docker-compose -f ~/access/docker-compose-tag.yml exec keycloak bash -c "sh /opt/jboss/keycloak/access-realm-config.sh"
+      register: out
 
-      - name: Add and configure realm
-        shell: |
-          docker cp ~/access/access-realm-config.sh $(docker-compose -f ~/access/docker-compose-tag.yml ps -q keycloak):/opt/jboss/keycloak
-          docker-compose -f ~/access/docker-compose-tag.yml exec keycloak bash -c "sh /opt/jboss/keycloak/access-realm-config.sh"
-        register: out
+    - debug: var=out.stdout_lines
 
-      - debug: var=out.stdout_lines
-
-      - name: Restart Course service to enroll students
-        shell: |
-          docker-compose -f ~/access/docker-compose-tag.yml restart course-service
+    - name: Restart Course service to enroll students
+      shell: |
+        docker-compose -f ~/access/docker-compose-tag.yml restart course-service
 
   tags:
       - keycloak
