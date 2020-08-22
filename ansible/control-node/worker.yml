@@ -5,17 +5,17 @@
       debug:
         msg: Starting initialization of Access Worker node
 
-    - name: Print init
+    - name: Docker role
       debug:
-        msg: Installing docker docker
+        msg: Installing docker
 
     - import_role:
         name: docker
       tags: docker-installation
 
-    - name: Print init
+    - name: Worker role
       debug:
-        msg: Exposing docker daemon
+        msg: Setting up worker node
 
     - import_role:
         name: worker

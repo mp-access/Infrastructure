@@ -1,13 +1,10 @@
-[test]
-access-test ansible_host=192.168.205.10
-access-test-worker ansible_host=192.168.205.11
-
-[testAccess]
+[main]
 access-test ansible_host=192.168.205.10
 
 [worker]
 access-test-worker ansible_host=192.168.205.11
 
-[test:vars]
+[main:vars]
+[worker:vars]
 ansible_ssh_user=vagrant
 ansible_python_interpreter=/usr/bin/python3
