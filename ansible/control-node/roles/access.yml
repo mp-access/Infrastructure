@@ -1,0 +1,58 @@
+- hosts: main
+  gather_facts: yes
+  become: yes
+  vars_files:
+    - ../vars/access.yml
+
+  tasks:
+    - name: Clone or pull repository
+      git:
+        repo: "{{ access_infrastructure_repo }}"
+        dest: ~/access
+        version: ansible
+
+    - name: Create .env file
+      template:
+        src: ../files/env.j2
+        dest: ~/access/.env
+
+    - name: Create backend configs folder
+      file:
+        path: ~/access/backend-config
+        state: directory
+
+    - name: Create repositories.json file
+      copy:
+        src: ../files/repositories.json.example
+        dest: ~/access/backend-config/repositories.json
+
+    - name: Create logs folder
+      file:
+        path: ~/access/logs
+        state: directory
+
+    - name: Create mongoDB folder
+      file:
+        path: ~/access/volumes/mongodb
+        state: directory
+
+    - name: Create Postgres folder
+      file:
+        path: ~/access/volumes/postgress
+        state: directory
+
+    - name: Create nginx ssl folder
+      file:
+        path: ~/access/nginx/ssl/
+        state: directory
+
+    - name: Create frontend ssl key pair
+      shell: openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout ~/access/nginx/ssl/server.key -out ~/access/nginx/ssl/server.crt -subj "/C=CH/ST=Zuerich/L=Zuerich/O=ACCESS/OU=ACCESS/CN={{ inventory_hostname }}"
+
+    - name: Start ACCESS
+      docker_compose:
+        project_src: ~/access
+        files: docker-compose-tag.yml
+      register: output
+  tags:
+    - access-deploy

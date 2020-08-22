@@ -5,10 +5,10 @@ services:
     image: hoal/ansible-control
     build: .
     tty: true
-    environment: 
+    environment:
         - ANSIBLE_HOST_KEY_CHECKING=false
     volumes:
-      - ./hosts:/etc/ansible/hosts
+      - ./vm.hosts:/etc/ansible/hosts
       - ./access:/usr/src
       - ./sshconfig:/root/.ssh/config
       - ~/.ssh/id_rsa_alpm:/root/.ssh/id_rsa

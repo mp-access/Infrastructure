@@ -1,0 +1,45 @@
+---
+- block:
+    - name: Create docker.service.d folder
+      file:
+        path: /var/docker
+        state: directory
+    - name: Copy CA certificate
+      copy:
+        src: ../files/tls/ca.pem
+        dest: /var/docker/ca.pem
+
+    - name: Copy certificate for daemon
+      copy:
+        src: ../files/tls/server-cert.pem
+        dest: /var/docker/server-cert.pem
+
+    - name: Copy keys for daemon
+      copy:
+        src: ../files/tls/server-key.pem
+        dest: /var/docker/server-key.pem
+
+    - name: Copy docker daemon.json file
+      template:
+        src: ../files/docker-daemon-tls.json.j2
+        dest: /etc/docker/daemon.json
+
+    - name: Create docker.service.d folder
+      file:
+        path: /etc/systemd/system/docker.service.d/
+        state: directory
+
+    - name: Override default docker service file to be usable with daemon.json
+      copy:
+        src: ../files/no_host_docker.service.d
+        dest: /etc/systemd/system/docker.service.d/docker.conf
+
+    - name: Restart Docker service to apply changes
+      shell: |
+        systemctl daemon-reload
+        systemctl restart docker.service
+        systemctl enable docker
+        netstat -tulnp | grep dockerd
+      register: out
+    - debug: var=out.stdout_lines
+

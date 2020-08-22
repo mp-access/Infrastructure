@@ -1,0 +1,9 @@
+[main]
+access-dev ansible_host=134.122.88.125
+
+[worker]
+access-worker ansible_host=104.248.36.66
+
+[main:vars]
+ansible_python_interpreter=/usr/bin/python3
+
