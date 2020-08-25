@@ -1,0 +1,131 @@
+---
+- block:
+    - name: Clone or pull repository
+      git:
+        repo: "{{ access_infrastructure_repo }}"
+        dest: ~/access
+        version: ansible
+
+    - name: Create .env file
+      template:
+        src: ../files/env.j2
+        dest: ~/access/.env
+
+    - name: Create backend configs folder
+      file:
+        path: ~/access/backend-config
+        state: directory
+
+    - name: Create repositories.json file
+      copy:
+        src: ../files/repositories.json.example
+        dest: ~/access/backend-config/repositories.json
+
+    - name: Create logs folder
+      file:
+        path: ~/access/logs
+        state: directory
+
+    - name: Create mongoDB folder
+      file:
+        path: ~/access/volumes/mongodb
+        state: directory
+
+    - name: Create Postgres folder
+      file:
+        path: ~/access/volumes/postgress
+        state: directory
+
+    - name: Create nginx ssl folder
+      file:
+        path: ~/access/nginx/ssl/
+        state: directory
+
+    - name: Create frontend ssl key pair
+      shell: openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout ~/access/nginx/ssl/server.key -out ~/access/nginx/ssl/server.crt -subj "/C=CH/ST=Zuerich/L=Zuerich/O=ACCESS/OU=ACCESS/CN={{ ansible_ssh_host }}" -addext "subjectAltName = IP:{{ ansible_ssh_host }}"
+
+    - name: Create docker certs folder
+      file:
+        path: ~/access/docker-certs/
+        state: directory
+
+    - name: Copy docker certs for client
+      copy:
+        src: "{{ item.src }}"
+        dest: "{{ item.dest }}"
+        mode: 600
+      with_items:
+        - { src: 'host_files/{{ inventory_hostname }}/ca.pem', dest: '~/access/docker-certs/ca.pem' }
+        - { src: 'host_files/{{ inventory_hostname }}/client-cert.pem', dest: '~/access/docker-certs/cert.pem' }
+        - { src: 'host_files/{{ inventory_hostname }}/client-key.pem', dest: '~/access/docker-certs/key.pem' }
+
+    - name: Start ACCESS
+      docker_compose:
+        project_src: ~/access
+        files: docker-compose-tag.yml
+      register: output
+  tags:
+    - access-deploy
+
+- block:
+    - name: Get container ID
+      shell:
+        cmd: docker-compose -f docker-compose-tag.yml ps -q keycloak
+        chdir: ~/access
+      register: keycloakContainerId
+
+    - debug: var=keycloakContainerId.stdout
+
+    - name: Get infos on container
+      docker_container_info:
+        name: "{{ keycloakContainerId.stdout }}"
+      register: result
+
+    - name: Does container exist?
+      debug:
+        msg: "The container {{ 'exists' if result.exists else 'does not exist' }}"
+
+    - name: Print information about container
+      debug:
+        var: result.container.NetworkSettings.Networks.access_default.IPAddress
+      when: result.exists
+
+    - set_fact: containerIp="{{ result.container.NetworkSettings.Networks.access_default.IPAddress }}"
+
+    - debug: var=containerIp
+
+    - name: Add keycloak user
+      shell: |
+        docker-compose -f ~/access/docker-compose-tag.yml exec keycloak bash -c "/opt/jboss/keycloak/bin/add-user-keycloak.sh -r master -u {{ keycloak_user }} -p {{ keycloak_password }}"
+        docker-compose -f ~/access/docker-compose-tag.yml restart keycloak
+      register: out
+
+    - name: Wait 90 seconds for keycloak connection to become reachable/usable
+      wait_for:
+        host: "{{ containerIp }}"
+        delay: 20
+        port: 8080
+        timeout: 90
+
+    - name: Copy realm provisioning script
+      copy:
+        src: ../files/access-realm-config.sh
+        dest: ~/access/access-realm-config.sh
+        mode: 0555
+
+    - name: Add and configure realm
+      block:
+        - shell: |
+            docker cp ~/access/access-realm-config.sh $(docker-compose -f ~/access/docker-compose-tag.yml ps -q keycloak):/opt/jboss/keycloak
+            docker-compose -f ~/access/docker-compose-tag.yml exec keycloak bash -c "sh /opt/jboss/keycloak/access-realm-config.sh"
+          register: error
+      rescue:
+        - debug:
+            msg: "Keycloak: {{ 'realm already exists' if 'Conflict detected' in error.stdout else 'Something unexpected happened' }}"
+
+    - name: Restart Course service to enroll students
+      shell: |
+        docker-compose -f ~/access/docker-compose-tag.yml restart course-service
+
+  tags:
+    - keycloak

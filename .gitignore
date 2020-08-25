@@ -218,3 +218,4 @@ nginx/ssl/
 *.box
 
 # End of https://www.toptal.com/developers/gitignore/api/vagrant
+**/.vault_pass.txt

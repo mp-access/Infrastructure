@@ -24,6 +24,10 @@
       apt: name={{ item }} state=latest update_cache=yes
       loop: [ 'docker-ce', 'docker-ce-cli', 'containerd.io' ]
 
+    - name: Install Docker Module for Python
+      pip:
+        name: docker
+
     - name: Pull default Docker image
       docker_image:
         name: hello-world

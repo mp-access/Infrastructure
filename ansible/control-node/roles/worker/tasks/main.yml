@@ -4,25 +4,22 @@
       file:
         path: /var/docker
         state: directory
-    - name: Copy CA certificate
-      copy:
-        src: ../files/tls/ca.pem
-        dest: /var/docker/ca.pem
 
-    - name: Copy certificate for daemon
+    - name: Copy docker certs for server
       copy:
-        src: ../files/tls/server-cert.pem
-        dest: /var/docker/server-cert.pem
-
-    - name: Copy keys for daemon
-      copy:
-        src: ../files/tls/server-key.pem
-        dest: /var/docker/server-key.pem
+        src: "{{ item.src }}"
+        dest: "{{ item.dest }}"
+        mode: 600
+      with_items:
+        - { src: 'host_files/{{ inventory_hostname }}/ca.pem', dest: '/var/docker/ca.pem' }
+        - { src: 'host_files/{{ inventory_hostname }}/server-cert.pem', dest: '/var/docker/server-cert.pem' }
+        - { src: 'host_files/{{ inventory_hostname }}/server-key.pem', dest: '/var/docker/server-key.pem' }
 
     - name: Copy docker daemon.json file
       template:
         src: ../files/docker-daemon-tls.json.j2
         dest: /etc/docker/daemon.json
+        mode: 600
 
     - name: Create docker.service.d folder
       file:
@@ -33,6 +30,7 @@
       copy:
         src: ../files/no_host_docker.service.d
         dest: /etc/systemd/system/docker.service.d/docker.conf
+        mode: 600
 
     - name: Restart Docker service to apply changes
       shell: |
