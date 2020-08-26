@@ -1,36 +1,33 @@
-version: '3'
+version: '3.7'
 
 
 services:
-  mailhog:
-    container_name: emailserver
-    image: mailhog/mailhog
-    hostname: mailhog
-    ports:
-      - 1025:1025
-      - 8025:8025
   postgres:
-      image: postgres
+      image: postgres:11-alpine
       container_name: keycloak-db
       hostname: postgres
-      volumes:
-        - ./volumes/postgres/data/db:/var/lib/postgresql/data
       environment:
         POSTGRES_DB: keycloak
         POSTGRES_USER: ${DB_USER}
         POSTGRES_PASSWORD: ${DB_PASSWORD}
+        TZ: Europe/Zurich
+      volumes:
+        - ./volumes/postgres/data/db:/var/lib/postgresql/data
+      restart: on-failure
   mongo:
-      image: mongo
+      image: mongo:4.2.0-bionic
       container_name: mongo
-      ports:
-        - 27017:27017
+      expose:
+        - 27017
       environment:
         MONGO_INITDB_ROOT_USERNAME: ${MONGO_DB_USER}
         MONGO_INITDB_ROOT_PASSWORD: ${MONGO_DB_PASSWORD}
+        TZ: Europe/Zurich
       volumes:
         - ./volumes/mongodb/data/db:/data/db
+      restart: on-failure
   keycloak:
-      image: jboss/keycloak
+      image: jboss/keycloak:7.0.0
       hostname: idp
       environment:
         DB_VENDOR: POSTGRES
@@ -39,19 +36,29 @@ services:
         DB_USER: ${DB_USER}
         DB_SCHEMA: public
         DB_PASSWORD: ${DB_PASSWORD}
-        KEYCLOAK_USER: ${KEYCLOAK_USER}
-        KEYCLOAK_PASSWORD: ${KEYCLOAK_PASSWORD}
+        KEYCLOAK_USER: "${KEYCLOAK_USER}"
+        KEYCLOAK_PASSWORD: "${KEYCLOAK_PASSWORD}"
         PROXY_ADDRESS_FORWARDING: "true"
+        TZ: Europe/Zurich
         # Uncomment the line below if you want to specify JDBC parameters. The parameter below is just an example, and it shouldn't be used in production without knowledge. It is highly recommended that you read the PostgreSQL JDBC driver documentation in order to use it.
         #JDBC_PARAMS: "ssl=true"
       expose:
         - 8080
+      healthcheck:
+        test: ["CMD", "curl", "-f", "http://localhost:8080/auth"]
+        interval: 30s
+        timeout: 10s
+        retries: 3
+        start_period: 40s
       depends_on:
         - postgres
       command:
       - "-b 0.0.0.0"
+      volumes:
+        - ./keycloak-themes/access:/opt/jboss/keycloak/themes/access
+      restart: on-failure
   course-service:
-      image: hoal/course-service:master
+      image: hoal/course-service:${BACKEND_TAG}
       expose:
         - 8080
       depends_on:
@@ -66,20 +73,36 @@ services:
         KEYCLOAK_PASSWORD: "${KEYCLOAK_PASSWORD}"
         KEYCLOAK_HOST: "${AUTH_SERVER}"
         JWK_URI: "${JWK_URI}"
+        REALM: "${KEYCLOAK_REALM}"
+        MONGO_DB_NAME: ${MONGO_DB_NAME}
+        MONGO_DB_USER: ${MONGO_DB_USER}
+        MONGO_DB_PASSWORD: ${MONGO_DB_PASSWORD}
+        FRONTEND_REALM: ${FRONTEND_REALM}
+        REDIRECT_URI_EMAIL: ${REDIRECT_URI_EMAIL}
+        BACKEND_VERSION: ${BACKEND_VERSION}
+        TZ: Europe/Zurich
       volumes:
         - ./docker-certs/:/app/docker-certs/:ro
         - ./.ssh/:/root/.ssh/:ro
+        - ./backend-config/repositories.json:/app/access/repositories.json
+        - ./logs/:/app/logs/
+      restart: on-failure
   frontend:
-      image: hoal/frontend
+      image: hoal/frontend:${FRONTEND_TAG}
       ports:
         - 80:80
         - 443:443
+      environment:
+        TZ: Europe/Zurich
       volumes:
-        - ./nginx-logs/:/etc/nginx/logs/
-        - ./nginx/conf.nginx:/etc/nginx/nginx.conf:ro
-        - ./nginx/:/etc/nginx/ssl/:ro
+        - ./nginx/logs/:/etc/nginx/logs/
+        - ./nginx/ssl/:/etc/ssl/info1/
+        - ./nginx/${NGINX_CONF}:/etc/nginx/nginx.conf
+        - ./frontend-config/keycloak-prod.json:/usr/share/nginx/html/keycloak-prod.json
+        - ./frontend-config/mime.types:/etc/nginx/mime.types
       links:
         - "course-service:api"
         - "keycloak:idp"
       depends_on:
         - course-service
+      restart: on-failure
