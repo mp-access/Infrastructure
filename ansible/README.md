@@ -93,6 +93,19 @@ To test the authenticated connection (with the unencrypted files):
 docker --tlsverify --tlscacert=ca.pem --tlscert=client-cert.pem --tlskey=client-key.pem -H=192.168.205.11:2376 info
 ```
 
+## SSH Deploy Keys for private repositories
+Run the following script to create the necessary deploy keys:
+```bash
+chmod u+x generate-repo-keys.sh
+./generate-repo-keys.sh
+```
+
+Move the generated files to `host_files/{{ inventory_hostname }}/git/` and encrypt the files with:
+```bash
+ansible-vault encrypt host_files/access-vm-main/{{ inventory_hostname }}/git/*
+```
+
+
 ## Install ACCESS
 The entire process is scripted using ansible. 
 Once the steps above are done (only needed once for every new deployment), the following two commands can be used:
