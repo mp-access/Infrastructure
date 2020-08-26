@@ -82,7 +82,7 @@
     - name: Start ACCESS
       docker_compose:
         project_src: ~/access
-        files: docker-compose-tag.yml
+        files: docker-compose.yml
       register: output
   tags:
     - access-deploy
@@ -90,7 +90,7 @@
 - block:
     - name: Get container ID
       shell:
-        cmd: docker-compose -f docker-compose-tag.yml ps -q keycloak
+        cmd: docker-compose -f docker-compose.yml ps -q keycloak
         chdir: ~/access
       register: keycloakContainerId
 
@@ -116,8 +116,8 @@
 
     - name: Add keycloak user
       shell: |
-        docker-compose -f ~/access/docker-compose-tag.yml exec keycloak bash -c "/opt/jboss/keycloak/bin/add-user-keycloak.sh -r master -u {{ keycloak_user }} -p {{ keycloak_password }}"
-        docker-compose -f ~/access/docker-compose-tag.yml restart keycloak
+        docker-compose -f ~/access/docker-compose.yml exec keycloak bash -c "/opt/jboss/keycloak/bin/add-user-keycloak.sh -r master -u {{ keycloak_admin_username }} -p {{ keycloak_admin_password }}"
+        docker-compose -f ~/access/docker-compose.yml restart keycloak
       register: out
 
     - name: Wait 90 seconds for keycloak connection to become reachable/usable
@@ -136,8 +136,8 @@
     - name: Add and configure realm
       block:
         - shell: |
-            docker cp ~/access/access-realm-config.sh $(docker-compose -f ~/access/docker-compose-tag.yml ps -q keycloak):/opt/jboss/keycloak
-            docker-compose -f ~/access/docker-compose-tag.yml exec keycloak bash -c "sh /opt/jboss/keycloak/access-realm-config.sh"
+            docker cp ~/access/access-realm-config.sh $(docker-compose -f ~/access/docker-compose.yml ps -q keycloak):/opt/jboss/keycloak
+            docker-compose -f ~/access/docker-compose.yml exec keycloak bash -c "sh /opt/jboss/keycloak/access-realm-config.sh"
           register: error
       rescue:
         - debug:
@@ -145,7 +145,7 @@
 
     - name: Restart Course service to enroll students
       shell: |
-        docker-compose -f ~/access/docker-compose-tag.yml restart course-service
+        docker-compose -f ~/access/docker-compose.yml restart course-service
 
   tags:
     - keycloak

@@ -1,8 +1,0 @@
-default_container_image: hello-world
-docker_version: 4.2.0
-docker_compose_version: 1.25.4
-access_infrastructure_repo: https://github.com/mp-access/Infrastructure.git
-
-#Keycloak
-keycloak_user: admin
-keycloak_password: admin
