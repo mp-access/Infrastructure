@@ -44,7 +44,7 @@
         state: directory
 
     - name: Create frontend ssl key pair
-      shell: openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout ~/access/nginx/ssl/server.key -out ~/access/nginx/ssl/server.crt -subj "/C=CH/ST=Zuerich/L=Zuerich/O=ACCESS/OU=ACCESS/CN={{ ansible_ssh_host }}" -addext "subjectAltName = IP:{{ ansible_ssh_host }}"
+      shell: openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout ~/access/nginx/ssl/server.key -out ~/access/nginx/ssl/server.crt -subj "/C=CH/ST=Zuerich/L=Zuerich/O=ACCESS/OU=ACCESS/CN={{ ansible_ssh_host }}" -addext "subjectAltName = IP:{{ ansible_ssh_host }},DNS:{{ inventory_hostname }}"
 
     - name: Create docker certs folder
       file:
@@ -67,17 +67,11 @@
         state: directory
         mode: 0700
 
-    - name: Create keypairs for private repos
-      openssh_keypair:
-        path: "~/access/.ssh/{{ item.name }}"
-        type: rsa
-        comment: access@ifi.uzh.ch
-        state: present
-      with_items:
-        - { name: 'id_rsa_github' }
-        - { name: 'id_rsa_gitlab' }
-        - { name: 'id_rsa_gitlab_ifi' }
-        - { name: 'id_rsa_bitbucket' }
+    - name: Copy git ssh keys
+      copy:
+        src: "host_files/{{ inventory_hostname }}/git/"
+        dest: "~/access/.ssh/"
+        mode: 0600
 
     - name: Copy ssh config
       copy:
