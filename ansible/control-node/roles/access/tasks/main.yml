@@ -10,6 +10,7 @@
       template:
         src: ../files/env.j2
         dest: ~/access/.env
+        mode: 0600
 
     - name: Create backend configs folder
       file:
@@ -18,8 +19,9 @@
 
     - name: Create repositories.json file
       copy:
-        src: ../files/repositories.json.example
+        src: host_files/{{ inventory_hostname }}/repositories.json
         dest: ~/access/backend-config/repositories.json
+        mode: 0700
 
     - name: Create logs folder
       file:
@@ -53,11 +55,35 @@
       copy:
         src: "{{ item.src }}"
         dest: "{{ item.dest }}"
-        mode: 600
+        mode: 0600
       with_items:
         - { src: 'host_files/{{ inventory_hostname }}/ca.pem', dest: '~/access/docker-certs/ca.pem' }
         - { src: 'host_files/{{ inventory_hostname }}/client-cert.pem', dest: '~/access/docker-certs/cert.pem' }
         - { src: 'host_files/{{ inventory_hostname }}/client-key.pem', dest: '~/access/docker-certs/key.pem' }
+
+    - name: Create .ssh folder to hold keypairs for git
+      file:
+        path: ~/access/.ssh
+        state: directory
+        mode: 0700
+
+    - name: Create keypairs for private repos
+      openssh_keypair:
+        path: "~/access/.ssh/{{ item.name }}"
+        type: rsa
+        comment: access@ifi.uzh.ch
+        state: present
+      with_items:
+        - { name: 'id_rsa_github' }
+        - { name: 'id_rsa_gitlab' }
+        - { name: 'id_rsa_gitlab_ifi' }
+        - { name: 'id_rsa_bitbucket' }
+
+    - name: Copy ssh config
+      copy:
+        src: ../files/ssh_config
+        dest: ~/access/.ssh/config
+        mode: 0600
 
     - name: Start ACCESS
       docker_compose:

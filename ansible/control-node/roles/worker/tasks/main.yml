@@ -1,11 +1,14 @@
 ---
 - block:
-    - name: Create docker.service.d folder
+    - name: Create docker var and systemd folders
       file:
-        path: /var/docker
+        path: "{{ item.name }}"
         state: directory
+      with_items:
+        - { name: /var/docker }
+        - { name: /etc/systemd/system/docker.service.d/ }
 
-    - name: Copy docker certs for server
+    - name: Copy docker certs for server, daemon.json and service files
       copy:
         src: "{{ item.src }}"
         dest: "{{ item.dest }}"
@@ -14,30 +17,17 @@
         - { src: 'host_files/{{ inventory_hostname }}/ca.pem', dest: '/var/docker/ca.pem' }
         - { src: 'host_files/{{ inventory_hostname }}/server-cert.pem', dest: '/var/docker/server-cert.pem' }
         - { src: 'host_files/{{ inventory_hostname }}/server-key.pem', dest: '/var/docker/server-key.pem' }
-
-    - name: Copy docker daemon.json file
-      template:
-        src: ../files/docker-daemon-tls.json.j2
-        dest: /etc/docker/daemon.json
-        mode: 600
-
-    - name: Create docker.service.d folder
-      file:
-        path: /etc/systemd/system/docker.service.d/
-        state: directory
-
-    - name: Override default docker service file to be usable with daemon.json
-      copy:
-        src: ../files/no_host_docker.service.d
-        dest: /etc/systemd/system/docker.service.d/docker.conf
-        mode: 600
+        - { src: '../files/docker-daemon-tls.json', dest: '/etc/docker/daemon.json' }
+        - { src: '../files/no_host_docker.service.d', dest: '/etc/systemd/system/docker.service.d/docker.conf' }
 
     - name: Restart Docker service to apply changes
-      shell: |
-        systemctl daemon-reload
-        systemctl restart docker.service
-        systemctl enable docker
-        netstat -tulnp | grep dockerd
-      register: out
-    - debug: var=out.stdout_lines
+      systemd:
+        name: docker
+        state: restarted
+        daemon_reload: yes
+        enabled: yes
 
+    - name: Netstat dockerd
+      shell: netstat -tulnp | grep dockerd
+      register: netstat_out
+    - debug: var=netstat_out.stdout_lines

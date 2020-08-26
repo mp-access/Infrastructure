@@ -7,7 +7,9 @@ access-vm-worker ansible_host=192.168.205.11
 [main:vars]
 ansible_ssh_user=vagrant
 ansible_python_interpreter=/usr/bin/python3
+ansible_ssh_common_args='-o StrictHostKeyChecking=no'
 
 [worker:vars]
 ansible_ssh_user=vagrant
 ansible_python_interpreter=/usr/bin/python3
+ansible_ssh_common_args='-o StrictHostKeyChecking=no'

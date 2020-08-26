@@ -1,0 +1,15 @@
+Host github.com
+  AddKeysToAgent yes
+  IdentityFile ~/.ssh/id_rsa_github
+
+Host gitlab.com
+  AddKeysToAgent yes
+  IdentityFile ~/.ssh/id_rsa_gitlab
+
+Host gitlab.ifi.uzh.ch
+  AddKeysToAgent yes
+  IdentityFile ~/.ssh/id_rsa_gitlab_ifi
+
+Host bitbucket.com
+  AddKeysToAgent yes
+  IdentityFile ~/.ssh/id_rsa_bitbucket
