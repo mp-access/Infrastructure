@@ -14,15 +14,6 @@ resource "digitalocean_droplet" "access" {
     private_key = file(var.pvt_key)
     timeout = "2m"
   }
-  provisioner "remote-exec" {
-    inline = [
-        "echo 'hello world'"
-    ]
-  }
-}
-
-output "access_ip_addr" {
-  value = digitalocean_droplet.access.ipv4_address
 }
 
 resource "digitalocean_firewall" "access-fw" {
