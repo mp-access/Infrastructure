@@ -84,53 +84,17 @@
         dest: ~/access/.ssh/config
         mode: 0700
 
-    - name: Start ACCESS
+    - name: Start keycloak and postgres
       docker_compose:
         project_src: ~/access
         files: docker-compose.yml
-      register: output
-  tags:
-    - access-deploy
+        services:
+          - postgres
+          - keycloak
 
-- block:
-    - name: Get container ID
-      shell:
-        cmd: docker-compose -f docker-compose.yml ps -q keycloak
-        chdir: ~/access
-      register: keycloakContainerId
-
-    - debug: var=keycloakContainerId.stdout
-
-    - name: Get infos on container
-      docker_container_info:
-        name: "{{ keycloakContainerId.stdout }}"
-      register: result
-
-    - name: Does container exist?
-      debug:
-        msg: "The container {{ 'exists' if result.exists else 'does not exist' }}"
-
-    - name: Print information about container
-      debug:
-        var: result.container.NetworkSettings.Networks.access_default.IPAddress
-      when: result.exists
-
-    - set_fact: containerIp="{{ result.container.NetworkSettings.Networks.access_default.IPAddress }}"
-
-    - debug: var=containerIp
-
-    - name: Add keycloak user
-      shell: |
-        docker-compose -f ~/access/docker-compose.yml exec keycloak bash -c "/opt/jboss/keycloak/bin/add-user-keycloak.sh -r master -u {{ keycloak_user }} -p {{ keycloak_password }}"
-        docker-compose -f ~/access/docker-compose.yml restart keycloak
-      register: out
-
-    - name: Wait 90 seconds for keycloak connection to become reachable/usable
-      wait_for:
-        host: "{{ containerIp }}"
-        delay: 20
-        port: 8080
-        timeout: 90
+    - name: Wait on keycloak
+      pause:
+        seconds: 30
 
     - name: Copy realm provisioning script
       copy:
@@ -148,12 +112,10 @@
         - debug:
             msg: "Keycloak: {{ 'realm already exists' if 'Conflict detected' in error.stdout else 'Something unexpected happened' }}"
 
-    - name: Restart Course service to enroll students
-      shell: |
-        docker-compose -f ~/access/docker-compose.yml restart course-service
-
-  tags:
-    - keycloak
+    - name: Start ACCESS
+      docker_compose:
+        project_src: ~/access
+        files: docker-compose.yml
 
 - block:
     - name: Get lets encrypt cert
@@ -165,10 +127,5 @@
     - name: Letsencrypt out
       debug: var=letsencrypt_out
 
-    - name: Restart frontend for changes to take effect
-      shell:
-        cmd: docker-compose restart frontend
-        chdir: ~/access
   tags:
     - letsencrypt
-    - access-deploy
