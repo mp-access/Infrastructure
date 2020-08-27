@@ -22,3 +22,5 @@ frontend_tag: master
 backend_version_info: 0.15.0-rc
 
 web_server_name: access.alpm.io
+
+letsencrypt: true
