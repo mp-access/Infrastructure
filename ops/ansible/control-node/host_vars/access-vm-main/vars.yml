@@ -20,3 +20,7 @@ docker_worker_host: "https://192.168.205.11:2376"
 backend_tag: master
 frontend_tag: master
 backend_version_info: 0.15.0-rc
+
+web_server_name: 192.168.205.11
+
+letsencrypt: false

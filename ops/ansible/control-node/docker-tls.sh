@@ -25,7 +25,7 @@ pushd docker-tls || exit
 # CA Keypair
 openssl genrsa -out ca-key.pem $BITS
 
-openssl req -new -x509 -days $LIFETIME -key ca-key.pem -sha256 -out ca.pem -subj "/C=CH/ST=Zuerich/L=Zuerich/O=ACCESS/OU=ACCESS/CN=docker"
+openssl req -new -x509 -days $LIFETIME -key ca-key.pem -sha256 -out ca.pem -subj "/C=CH/ST=Zuerich/L=Zuerich/O=ACCESS/OU=ACCESS/CN=docker-ca"
 
 # Server Keypair
 openssl genrsa -out server-key.pem $BITS
