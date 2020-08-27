@@ -1,0 +1,12 @@
+vault_github_webhook_secret: secret
+vault_gitlab_webhook_secret: secret
+
+vault_keycloakdb_user: keycloak
+vault_keycloakdb_password: FW2agZksswPcwXCqgmZNHiaYpRfHn9Y
+
+vault_keycloak_admin_username: admin
+vault_keycloak_admin_password: QHaClP5pYhgZKHxo07HTMH1PSXydm9h
+
+# Mongo secrets
+vault_mongodb_user: mongo
+vault_mongodb_password: 7yxheUWahTVK8sQLlq7uyCRZqJHTj17
