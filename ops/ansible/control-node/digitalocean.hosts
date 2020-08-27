@@ -1,8 +1,8 @@
 [main]
-access-do-main ansible_host=134.122.65.243
+access-do-main ansible_host=165.22.84.18
 
 [worker]
-access-do-worker ansible_host=165.22.75.131
+access-do-worker ansible_host=165.22.84.20
 
 [main:vars]
 ansible_ssh_user=root
