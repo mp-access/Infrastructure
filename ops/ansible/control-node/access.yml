@@ -11,7 +11,7 @@
     - import_role:
         name: docker
       become: yes
-      tags: docker-installation
+      tags: docker
 
     - name: Add the user 'access' with a primary group of 'docker'
       user:
