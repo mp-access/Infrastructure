@@ -91,6 +91,7 @@ services:
       volumes:
         - ./nginx/logs/:/etc/nginx/logs/
         - ./nginx/ssl/:/etc/ssl/access/
+        - ./nginx/letsencrypt/:/etc/letsencrypt
         - ./nginx/${NGINX_CONF}:/etc/nginx/nginx.conf
       depends_on:
         - course-service

@@ -29,6 +29,7 @@
         - { name: '~/access/volumes/mongodb' }
         - { name: '~/access/volumes/postgres' }
         - { name: '~/access/nginx/ssl' }
+        - { name: '~/access/nginx/letsencrypt' }
         - { name: '~/access/certs-docker' }
         - { name: '~/access/.ssh' }
 
@@ -49,9 +50,10 @@
         dest: ~/access/
 
     - name: Copy nginx conf
-      copy:
-        src: ../files/conf-prod.nginx
+      template:
+        src: ../files/conf-no-tls.nginx.j2
         dest: ~/access/nginx/conf.nginx
+        mode: 600
 
     - name: Create frontend ssl key pair
       shell: openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout ~/access/nginx/ssl/server.key -out ~/access/nginx/ssl/server.crt -subj "/C=CH/ST=Zuerich/L=Zuerich/O=ACCESS/OU=ACCESS/CN={{ ansible_ssh_host }}" -addext "subjectAltName = IP:{{ ansible_ssh_host }},DNS:{{ inventory_hostname }}"
