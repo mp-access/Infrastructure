@@ -51,7 +51,7 @@
 
     - name: Copy nginx conf
       template:
-        src: ../files/conf-no-tls.nginx.j2
+        src: "host_files/{{ inventory_hostname }}/conf-no-tls.nginx.j2
         dest: ~/access/nginx/conf.nginx
         mode: 600
 
@@ -65,7 +65,7 @@
 
     - name: Copy selfsigned nginx conf
       copy:
-        src: ../files/conf-selfsigned.nginx
+        src: "host_files/{{ inventory_hostname }}/conf-selfsigned.nginx"
         dest: ~/access/nginx/conf.nginx
         mode: 600
       when: not letsencrypt
@@ -87,7 +87,7 @@
 
     - name: Copy ssh config
       copy:
-        src: ../files/ssh_config
+        src: "host_files/{{ inventory_hostname }}/ssh_config"
         dest: ~/access/.ssh/config
         mode: 0700
 
