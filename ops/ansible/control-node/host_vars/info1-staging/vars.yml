@@ -14,13 +14,13 @@ mongodb_user: "{{ vault_mongodb_user }}"
 mongodb_password: "{{ vault_mongodb_password }}"
 
 # Docker worker host
-docker_worker_host: "https://worker.access.alpm.io:2376"
+docker_worker_host: "https://172.23.33.52:2376"
 
 # Backend image TAG
 backend_tag: master
 frontend_tag: master
-backend_version_info: 0.15.0-rc
+backend_version_info: 0.16
 
-web_server_name: www.access.alpm.io
+web_server_name: www.info1-exercises.ifi.uzh.ch
 
-letsencrypt: true
+letsencrypt: false

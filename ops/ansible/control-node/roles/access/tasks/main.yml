@@ -63,6 +63,13 @@
       shell: openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout ~/access/nginx/ssl/server.key -out ~/access/nginx/ssl/server.crt -subj "/C=CH/ST=Zuerich/L=Zuerich/O=ACCESS/OU=ACCESS/CN={{ ansible_ssh_host }}" -addext "subjectAltName = IP:{{ ansible_ssh_host }},DNS:{{ inventory_hostname }}"
       when: not letsencrypt
 
+    - name: Copy selfsigned nginx conf
+      copy:
+        src: ../files/conf-selfsigned.nginx
+        dest: ~/access/nginx/conf.nginx
+        mode: 600
+      when: not letsencrypt
+
     - name: Copy docker certs for client
       copy:
         src: "{{ item.src }}"
@@ -118,6 +125,20 @@
         files: docker-compose.yml
 
 - block:
+    - name: Copy and unarchive letsencrypt directory
+      unarchive:
+        src: host_files/{{ inventory_hostname }}/letsencrypt.tgz
+        dest: ~/access/nginx
+      register: unarchive_letsencrypt
+  rescue:
+    - debug:
+        msg: "Failed to copy and extract old certificates"
+    - debug: var=unarchive_letsencrypt.msg
+      when: unarchive_letsencrypt is defined
+  tags:
+    - upload-letsencrypt
+
+- block:
     - name: Get lets encrypt cert
       shell:
         cmd: "docker-compose exec frontend certbot --nginx --register-unsafely-without-email --agree-tos --non-interactive --keep-until-expiring -d {{ web_server_name }}"
@@ -126,6 +147,19 @@
       when: letsencrypt
     - name: Letsencrypt out
       debug: var=letsencrypt_out
+
+    - name: Compress letsencrypt directory
+      archive:
+        path: ~/access/nginx/letsencrypt
+        dest: ~/access/letsencrypt.tgz
+      when: letsencrypt
+
+    - name: Copy certs to repo to avoid incurring into rate limiter
+      fetch:
+        src: ~/access/letsencrypt.tgz
+        dest: host_files/{{ inventory_hostname }}/letsencrypt.tgz
+        flat: yes
+      when: letsencrypt
 
   tags:
     - letsencrypt
