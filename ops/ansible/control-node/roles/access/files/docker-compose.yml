@@ -75,6 +75,7 @@ services:
         REDIRECT_URI_EMAIL: ${REDIRECT_URI_EMAIL}
         BACKEND_VERSION: ${BACKEND_VERSION}
         TZ: Europe/Zurich
+        COURSE_USERS_USE_DEFAULT_PASSWORD_FOR_NEW_ACCOUNTS: "false"
       volumes:
         - ./certs-docker/:/app/certs-docker/:ro
         - ./.ssh/:/root/.ssh/:ro
