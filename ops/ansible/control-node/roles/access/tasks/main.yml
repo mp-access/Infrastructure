@@ -51,7 +51,7 @@
 
     - name: Copy nginx conf
       template:
-        src: "host_files/{{ inventory_hostname }}/conf-no-tls.nginx.j2
+        src: "host_files/{{ inventory_hostname }}/conf-no-tls.nginx.j2"
         dest: ~/access/nginx/conf.nginx
         mode: 600
 
@@ -123,43 +123,3 @@
       docker_compose:
         project_src: ~/access
         files: docker-compose.yml
-
-- block:
-    - name: Copy and unarchive letsencrypt directory
-      unarchive:
-        src: host_files/{{ inventory_hostname }}/letsencrypt.tgz
-        dest: ~/access/nginx
-      register: unarchive_letsencrypt
-  rescue:
-    - debug:
-        msg: "Failed to copy and extract old certificates"
-    - debug: var=unarchive_letsencrypt.msg
-      when: unarchive_letsencrypt is defined
-  tags:
-    - upload-letsencrypt
-
-- block:
-    - name: Get lets encrypt cert
-      shell:
-        cmd: "docker-compose exec frontend certbot --nginx --register-unsafely-without-email --agree-tos --non-interactive --keep-until-expiring -d {{ web_server_name }}"
-        chdir: ~/access
-      register: letsencrypt_out
-      when: letsencrypt
-    - name: Letsencrypt out
-      debug: var=letsencrypt_out
-
-    - name: Compress letsencrypt directory
-      archive:
-        path: ~/access/nginx/letsencrypt
-        dest: ~/access/letsencrypt.tgz
-      when: letsencrypt
-
-    - name: Copy certs to repo to avoid incurring into rate limiter
-      fetch:
-        src: ~/access/letsencrypt.tgz
-        dest: host_files/{{ inventory_hostname }}/letsencrypt.tgz
-        flat: yes
-      when: letsencrypt
-
-  tags:
-    - letsencrypt

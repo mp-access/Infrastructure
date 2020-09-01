@@ -169,3 +169,10 @@ vagrant ssh access
 or
 vagrant ssh worker
 ```
+
+
+# Testing connection to hosts
+You can use the ping module to verify the connection to an inventory
+```bash
+ansible -i digitalocean.hosts all -m ping
+```
