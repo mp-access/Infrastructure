@@ -1,0 +1,5 @@
+access_infrastructure_repo: https://github.com/mp-access/Infrastructure.git
+
+#Keycloak
+keycloak_user: admin
+keycloak_password: admin

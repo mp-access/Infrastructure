@@ -1,0 +1,26 @@
+Host *
+    # disable host key checking: avoid asking for the keyprint authenticity
+    StrictHostKeyChecking no
+    UserKnownHostsFile /dev/null
+    # enable hashing known_host file
+    HashKnownHosts yes
+    # IdentityFile allows to specify exactly which private key I wish to use for authentification
+    IdentityFile /root/.ssh/id_rsa
+
+Host test-access
+    HostName 192.168.205.10
+    User vagrant
+    Port 22
+Host test-worker
+    HostName 192.168.205.11
+    User vagrant
+    Port 22
+
+Host alpm-dev
+    HostName alpm.io
+    User root
+    Port 22
+Host alpm-worker
+    HostName worker.alpm.io
+    User root
+    Port 22

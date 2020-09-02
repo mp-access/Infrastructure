@@ -1,0 +1,33 @@
+---
+- block:
+    - name: Create docker var and systemd folders
+      file:
+        path: "{{ item.name }}"
+        state: directory
+      with_items:
+        - { name: /var/docker }
+        - { name: /etc/systemd/system/docker.service.d/ }
+
+    - name: Copy docker certs for server, daemon.json and service files
+      copy:
+        src: "{{ item.src }}"
+        dest: "{{ item.dest }}"
+        mode: 600
+      with_items:
+        - { src: 'host_files/{{ inventory_hostname }}/ca.pem', dest: '/var/docker/ca.pem' }
+        - { src: 'host_files/{{ inventory_hostname }}/server-cert.pem', dest: '/var/docker/server-cert.pem' }
+        - { src: 'host_files/{{ inventory_hostname }}/server-key.pem', dest: '/var/docker/server-key.pem' }
+        - { src: '../files/docker-daemon-tls.json', dest: '/etc/docker/daemon.json' }
+        - { src: '../files/no_host_docker.service.d', dest: '/etc/systemd/system/docker.service.d/docker.conf' }
+
+    - name: Restart Docker service to apply changes
+      systemd:
+        name: docker
+        state: restarted
+        daemon_reload: yes
+        enabled: yes
+
+    - name: Netstat dockerd
+      shell: netstat -tulnp | grep dockerd
+      register: netstat_out
+    - debug: var=netstat_out.stdout_lines

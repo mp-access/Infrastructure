@@ -1,0 +1,7 @@
+{
+  "repositories": [
+    "https://github.com/mp-access/Template-Course",
+    "https://github.com/mp-access/Mock-Course",
+    "git@github.com:mp-access/Private-Mock-Course.git"
+  ]
+}

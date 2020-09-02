@@ -1,0 +1,43 @@
+---
+- block:
+    - name: Upload host letsencrypt certs if available in the control node, but not on the target host
+      unarchive:
+        src: "host_files/{{ inventory_hostname }}/letsencrypt.tgz"
+        dest: /home/access/access/nginx
+        creates: /home/access/access/nginx/letsencrypt
+      register: unarchive_letsencrypt
+  rescue:
+    - debug:
+        msg: "Failed to copy and extract old certificates"
+    - debug: var=unarchive_letsencrypt.msg
+      when: unarchive_letsencrypt is defined
+  tags:
+    - upload-letsencrypt
+
+- block:
+    - name: Get lets encrypt cert
+      shell:
+        cmd: "docker-compose exec frontend certbot --nginx --register-unsafely-without-email --agree-tos --non-interactive --keep-until-expiring -d {{ web_server_name }}"
+        chdir: /home/access/access
+      register: letsencrypt_out
+      when: letsencrypt
+    - name: Letsencrypt out
+      debug: var=letsencrypt_out
+
+    - name: Compress letsencrypt directory
+      archive:
+        path: /home/access/access/nginx/letsencrypt
+        dest: /home/access/access/letsencrypt.tar.gz
+      when: letsencrypt
+
+    - debug: var=result
+
+    - name: Copy certs to repo to avoid incurring into rate limiter
+      fetch:
+        src: /home/access/access/letsencrypt.tar.gz
+        dest: "host_files/{{ inventory_hostname }}/letsencrypt.tgz"
+        flat: yes
+      when: letsencrypt
+
+  tags:
+    - letsencrypt

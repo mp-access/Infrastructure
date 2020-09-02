@@ -1,0 +1,8 @@
+{
+  "repositories": [
+    "https://github.com/mp-access/Template-Course",
+    "https://github.com/mp-access/Mock-Course",
+    "git@github.com:mp-access/Private-Mock-Course.git",
+    "git@staging.gitlab.ifi.uzh.ch:seal/access/course-info1-hs20-staging.git"
+  ]
+}
