@@ -6,6 +6,10 @@
         dest: /home/access/access/nginx
         creates: /home/access/access/nginx/letsencrypt
       register: unarchive_letsencrypt
+    - name: Upload lets encrypt nginx conf if available in the control node
+      copy:
+        src: "host_files/{{ inventory_hostname }}/letsencrypt-conf.nginx"
+        dest: /home/access/access/nginx/conf.nginx
   rescue:
     - debug:
         msg: "Failed to copy and extract old certificates"
@@ -15,6 +19,14 @@
     - upload-letsencrypt
 
 - block:
+
+    - name: Restart frontend
+      docker_compose:
+        project_src: /home/access/access
+        files: docker-compose.yml
+        restarted: yes
+        services: frontend
+
     - name: Get lets encrypt cert
       shell:
         cmd: "docker-compose exec frontend certbot --nginx --register-unsafely-without-email --agree-tos --non-interactive --keep-until-expiring -d {{ web_server_name }}"
@@ -39,5 +51,9 @@
         flat: yes
       when: letsencrypt
 
-  tags:
-    - letsencrypt
+    - name: Copy the lets encrypt updated nginx config
+      fetch:
+        src: /home/access/access/nginx/conf.nginx
+        dest: "host_files/{{ inventory_hostname }}/letsencrypt-conf.nginx"
+        flat: yes
+      when: letsencrypt

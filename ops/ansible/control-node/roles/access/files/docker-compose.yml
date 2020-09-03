@@ -11,7 +11,7 @@ services:
         TZ: Europe/Zurich
       volumes:
         - ./volumes/postgres/data/db:/var/lib/postgresql/data
-      restart: on-failure
+      restart: always
   mongo:
       image: mongo:4.2.0-bionic
       environment:
@@ -20,7 +20,7 @@ services:
         TZ: Europe/Zurich
       volumes:
         - ./volumes/mongodb/data/db:/data/db
-      restart: on-failure
+      restart: always
   keycloak:
       image: jboss/keycloak:7.0.0
       environment:
@@ -50,7 +50,7 @@ services:
       - "-b 0.0.0.0"
       volumes:
         - ./keycloak-themes/access:/opt/jboss/keycloak/themes/access
-      restart: on-failure
+      restart: always
   course-service:
       image: hoal/course-service:${BACKEND_TAG}
       expose:
@@ -81,7 +81,7 @@ services:
         - ./.ssh/:/root/.ssh/:ro
         - ./backend-config/repositories.json:/app/access/repositories.json
         - ./logs/:/app/logs/
-      restart: on-failure
+      restart: always
   frontend:
       image: hoal/frontend:${FRONTEND_TAG}
       ports:
@@ -96,4 +96,4 @@ services:
         - ./nginx/${NGINX_CONF}:/etc/nginx/nginx.conf
       depends_on:
         - course-service
-      restart: on-failure
+      restart: always

@@ -1,0 +1,50 @@
+Host live.gitlab.ifi.uzh.ch
+  HostName gitlab.ifi.uzh.ch
+  AddKeysToAgent yes
+  IdentityFile ~/.ssh/id_rsa_0
+
+Host 1.gitlab.ifi.uzh.ch
+  HostName gitlab.ifi.uzh.ch
+  AddKeysToAgent yes
+  IdentityFile ~/.ssh/id_rsa_1
+
+Host 2.gitlab.ifi.uzh.ch
+  HostName gitlab.ifi.uzh.ch
+  AddKeysToAgent yes
+  IdentityFile ~/.ssh/id_rsa_2
+
+Host 3.gitlab.ifi.uzh.ch
+  HostName gitlab.ifi.uzh.ch
+  AddKeysToAgent yes
+  IdentityFile ~/.ssh/id_rsa_3
+
+Host 4.gitlab.ifi.uzh.ch
+  HostName gitlab.ifi.uzh.ch
+  AddKeysToAgent yes
+  IdentityFile ~/.ssh/id_rsa_4
+
+Host 5.gitlab.ifi.uzh.ch
+  HostName gitlab.ifi.uzh.ch
+  AddKeysToAgent yes
+  IdentityFile ~/.ssh/id_rsa_5
+
+Host 6.gitlab.ifi.uzh.ch
+  HostName gitlab.ifi.uzh.ch
+  AddKeysToAgent yes
+  IdentityFile ~/.ssh/id_rsa_6
+
+Host 7.gitlab.ifi.uzh.ch
+  HostName gitlab.ifi.uzh.ch
+  AddKeysToAgent yes
+  IdentityFile ~/.ssh/id_rsa_7
+
+Host 8.gitlab.ifi.uzh.ch
+  HostName gitlab.ifi.uzh.ch
+  AddKeysToAgent yes
+  IdentityFile ~/.ssh/id_rsa_8
+
+Host 9.gitlab.ifi.uzh.ch
+  HostName gitlab.ifi.uzh.ch
+  AddKeysToAgent yes
+  IdentityFile ~/.ssh/id_rsa_9
+

@@ -1,8 +1,8 @@
 [main]
-info1-prod ansible_host=172.23.33.236
+info1-production ansible_host=130.60.24.175
 
 [worker]
-info1-prod-worker ansible_host=172.23.33.51
+info1-production-worker ansible_host=172.23.33.51
 
 [main:vars]
 ansible_ssh_user=ubuntu

@@ -1,7 +1,10 @@
 {
-    "tlsverify": true,
-    "tlscacert": "/var/docker/ca.pem",
-    "tlscert": "/var/docker/server-cert.pem",
-    "tlskey": "/var/docker/server-key.pem",
-    "hosts": ["unix:///var/run/docker.sock", "tcp://0.0.0.0:2376"]
+  "tlsverify": true,
+  "tlscacert": "/var/docker/ca.pem",
+  "tlscert": "/var/docker/server-cert.pem",
+  "tlskey": "/var/docker/server-key.pem",
+  "hosts": [
+    "unix:///var/run/docker.sock",
+    "tcp://0.0.0.0:2376"
+  ]
 }

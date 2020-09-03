@@ -1,0 +1,119 @@
+worker_processes 4;
+worker_rlimit_nofile 100000;
+
+events {
+    worker_connections 4000;
+    multi_accept on;
+    use epoll;
+}
+
+http {
+    # cache informations about FDs, frequently accessed files
+    # can boost performance, but you need to test those values
+    open_file_cache max=200000 inactive=20s;
+    open_file_cache_valid 30s;
+    open_file_cache_min_uses 2;
+    open_file_cache_errors on;
+    # copies data between one FD and other from within the kernel
+    # faster than read() + write()
+    sendfile on;
+
+    # send headers in one piece, it is better than sending them one by one
+    tcp_nopush on;
+
+    # don't buffer data sent, good for small data bursts in real time
+    tcp_nodelay on;
+
+    # reduce the data that needs to be sent over network -- for testing environment
+    gzip on;
+    # gzip_static on;
+    gzip_min_length 10240;
+    gzip_comp_level 2;
+    gzip_vary on;
+    gzip_disable msie6;
+    gzip_proxied expired no-cache no-store private auth;
+    gzip_types
+        # text/html is always compressed by HttpGzipModule
+    text/css
+    text/javascript
+    text/xml
+    text/plain
+    text/x-component
+    application/javascript
+    application/x-javascript
+    application/json
+    application/xml
+    application/rss+xml
+    application/atom+xml
+    font/truetype
+    font/opentype
+    application/vnd.ms-fontobject
+    image/svg+xml;
+
+    # allow the server to close connection on non responding client, this will free up memory
+    reset_timedout_connection on;
+
+    # request timed out -- default 60
+    client_body_timeout 10;
+
+    # if client stop responding, free up memory -- default 60
+    send_timeout 10;
+
+    # server will close connection after this time -- default 75
+    keepalive_timeout 30;
+
+    # number of requests client can make over keep-alive -- for testing environment
+    keepalive_requests 100000;
+
+    log_format compression '$remote_addr - $remote_user [$time_local] '
+    '"$request" $status $body_bytes_sent '
+    '"$http_x_hub_signature" '
+    '"$http_referer" "$http_user_agent" "$gzip_ratio"';
+
+    error_log /etc/nginx/logs/error_log.log warn;
+
+    server {
+        listen 80 default_server;
+        listen [::]:80 default_server;
+        root /usr/share/nginx/html;
+        server_name {{ web_server_name }};
+
+        charset utf-8;
+        gzip on;
+        access_log /etc/nginx/logs/nginx-access.log compression buffer=32k;
+
+        include  mime.types;
+
+        proxy_set_header    Host               $host;
+        proxy_set_header    X-Real-IP          $remote_addr;
+        proxy_set_header    X-Forwarded-For    $proxy_add_x_forwarded_for;
+        proxy_set_header    X-Forwarded-Host   $host;
+        proxy_set_header    X-Forwarded-Server $host;
+        proxy_set_header    X-Forwarded-Port   $server_port;
+        proxy_set_header    X-Forwarded-Proto  $scheme;
+        proxy_pass_header X-Hub-Signature;
+        proxy_pass_request_headers      on;
+
+        location / {
+            try_files $uri /index.html;
+        }
+
+        location /api {
+            proxy_pass http://course-service:8080/api;
+        }
+
+        location /auth {
+            proxy_pass http://keycloak:8080/auth;
+        }
+
+        location /staging/api/webhooks/courses/ {
+            proxy_pass https://172.23.33.52/api/webhooks/courses/;
+            proxy_set_header Host $host:$server_port;
+            proxy_set_header X-Forwarded-Host $server_name;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_pass_header X-Hub-Signature;
+            proxy_pass_request_headers      on;
+        }
+    }
+}
