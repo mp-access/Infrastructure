@@ -29,7 +29,7 @@ services:
   keycloak:
       container_name: idp
       hostname: idp
-      image: jboss/keycloak
+      image: jboss/keycloak:7.0.0
       environment:
         DB_VENDOR: POSTGRES
         DB_ADDR: postgres
