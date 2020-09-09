@@ -21,6 +21,7 @@ backend_tag: master
 frontend_tag: master
 backend_version_info: 0.16
 
-web_server_name: www.info1-exercises.ifi.uzh.ch
+web_server_name: info1-exercises.ifi.uzh.ch
+auth_web_server_name: https://172.23.33.52
 
 letsencrypt: false
