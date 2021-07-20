@@ -2,11 +2,12 @@
 set -Eeuo pipefail
 
 DEFAULT_HOST=worker.access.alpm.io
-DEFAULT_IP=192.168.205.11
-SERVER_HOST=${HOST:-$DEFAULT_HOST}
+DEFAULT_IP=172.23.33.51
+SERVER_HOST1=${HOST:-$DEFAULT_HOST}
+SERVER_HOST2=info1-exercises.ifi.uzh.ch
 SERVER_IP=${IP:-$DEFAULT_IP}
 
-echo "Generating server certificate for: $SERVER_HOST. Subj AltName: DNS:$SERVER_HOST,IP:$SERVER_IP"
+echo "Generating server certificate for: $SERVER_HOST1, $SERVER_HOST2. Subj AltName: DNS:$SERVER_HOST1,DNS:$SERVER_HOST2,IP:$SERVER_IP"
 
 LIFETIME=365
 BITS=4096
@@ -30,9 +31,9 @@ openssl req -new -x509 -days $LIFETIME -key ca-key.pem -sha256 -out ca.pem -subj
 # Server Keypair
 openssl genrsa -out server-key.pem $BITS
 
-openssl req -subj "/CN=$SERVER_HOST" -sha256 -new -key server-key.pem -out server.csr
+openssl req -subj "/CN=$SERVER_HOST1" -sha256 -new -key server-key.pem -out server.csr
 
-echo subjectAltName = DNS:"$SERVER_HOST",IP:"$SERVER_IP" >>extfile.cnf
+echo subjectAltName = DNS:"$SERVER_HOST1",IP:"$SERVER_IP",DNS:"$SERVER_HOST2" >>extfile.cnf
 echo extendedKeyUsage = serverAuth >>extfile.cnf
 
 openssl x509 -req -days $LIFETIME -sha256 -in server.csr -CA ca.pem -CAkey ca-key.pem -CAcreateserial -out server-cert.pem -extfile extfile.cnf
