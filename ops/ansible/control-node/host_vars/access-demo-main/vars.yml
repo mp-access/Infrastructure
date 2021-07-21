@@ -1,0 +1,27 @@
+# Webhook secrets
+github_webhook_secret: "{{ vault_github_webhook_secret }}"
+gitlab_webhook_secret: "{{ vault_gitlab_webhook_secret }}"
+
+# Keycloak secrets
+keycloakdb_user: "{{ vault_keycloakdb_user }}"
+keycloakdb_password: "{{ vault_keycloakdb_password }}"
+
+keycloak_admin_username: "{{ vault_keycloak_admin_username }}"
+keycloak_admin_password: "{{ vault_keycloak_admin_password }}"
+
+# Mongo secrets
+mongodb_user: "{{ vault_mongodb_user }}"
+mongodb_password: "{{ vault_mongodb_password }}"
+
+# Docker worker host
+docker_worker_host: "https://worker.demo.access-tool.ch:2376"
+
+# Backend image TAG
+backend_tag: master
+frontend_tag: master
+backend_version_info: 0.15.0-rc
+
+web_server_name: demo.access-tool.ch
+auth_web_server_name: https://demo.access-tool.ch
+
+letsencrypt: true

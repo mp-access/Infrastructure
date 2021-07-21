@@ -35,6 +35,18 @@ This way you won't have to set the vault password with every command.
 
 **`.vault_pass.txt` Should not be committed. It's ignored in `.gitignore`.**
 
+TODO:
+## Create an inventory file
+TODO: Copy existing hosts file and update with server coordinates
+
+## Create host vars folders and files
+
+## Add repositories.json
+
+## Realm provisioning script
+Add baseurl to provisioning script so that the impersonation feature works out of the box
+
+
 ## TLS Mutual Authentication for docker daemon
 Run `docker-tls.sh` to generate the full set of private keys and certificates needed.
 It will create all files in a directory called `docker-tls`.

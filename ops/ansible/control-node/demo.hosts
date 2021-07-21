@@ -1,0 +1,15 @@
+[main]
+access-demo-main ansible_host=161.35.65.139
+
+[worker]
+access-demo-worker ansible_host=161.35.65.139
+
+[main:vars]
+ansible_ssh_user=root
+ansible_python_interpreter=/usr/bin/python3
+ansible_ssh_common_args='-o StrictHostKeyChecking=no'
+
+[worker:vars]
+ansible_ssh_user=root
+ansible_python_interpreter=/usr/bin/python3
+ansible_ssh_common_args='-o StrictHostKeyChecking=no'
