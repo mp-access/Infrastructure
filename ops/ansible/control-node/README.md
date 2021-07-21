@@ -1,3 +1,32 @@
+# TODO
+Notes from an install from scratch - see also 'TODO' in the rest of the README
+
+
+Infrastructure/ops/ansible/control-node/roles/docker/tasks/main.yml
+specify packages to be installed remotely
+
+acl, net-tools
+
+
+TODO
+cp -R host_files/info1-staging/git host_files/access-tutorial/
+cp roles/access/files/conf-no-tls.nginx.j2 host_files/access-tutorial/
+cp roles/access/files/conf-selfsigned.nginx host_files/access-tutorial/
+
+
+Enable inpersonate:
+/auth -> clients -> frontend, edit- -> Base URL setzen auf https://host.com
+
+Email setup in keycloak
+
+
+
+
+
+
+
+
+
 # Ansible
 
 This folder includes everything needed in order to set up ACCESS using ansible.
@@ -48,6 +77,10 @@ Add baseurl to provisioning script so that the impersonation feature works out o
 
 
 ## TLS Mutual Authentication for docker daemon
+Edit docker-tls.sh for correct hostnames and IPs.
+
+Copy dev.hosts to arbitrary name (e.g. staging.hosts), edit names and ips.
+
 Run `docker-tls.sh` to generate the full set of private keys and certificates needed.
 It will create all files in a directory called `docker-tls`.
 
@@ -55,6 +88,8 @@ It will create all files in a directory called `docker-tls`.
 chmod u+x docker-tls.sh
 ./docker-tls.sh
 ```
+
+
 This will generate the following files and folders:
 
 ```bash
@@ -94,6 +129,12 @@ ansible-vault encrypt host_files/access-vm-main/*
 ansible-vault encrypt host_files/access-vm-worker/*
 ```
 
+TODO
+Put ansible_user=ubuntu in inventory file (all:vars if necessary)
+
+TODO
+Before playbook: create/copy files in host_vars/x/{vars,vault}.yml, change user/pwds accordingly
+
 Then run setup with:
 ```bash
 ansible-playbook -i vm.hosts worker.yml
@@ -116,6 +157,9 @@ Move the generated files to `host_files/{{ inventory_hostname }}/git/` and encry
 ```bash
 ansible-vault encrypt host_files/access-vm-main/{{ inventory_hostname }}/git/*
 ```
+
+TODO:
+also the `ssh_config`
 
 
 ## Install ACCESS

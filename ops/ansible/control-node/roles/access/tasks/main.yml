@@ -79,6 +79,7 @@
         - { src: 'host_files/{{ inventory_hostname }}/ca.pem', dest: '~/access/certs-docker/ca.pem' }
         - { src: 'host_files/{{ inventory_hostname }}/client-cert.pem', dest: '~/access/certs-docker/cert.pem' }
         - { src: 'host_files/{{ inventory_hostname }}/client-key.pem', dest: '~/access/certs-docker/key.pem' }
+      tags: dockercerts
 
     - name: Copy git ssh keys
       copy:
