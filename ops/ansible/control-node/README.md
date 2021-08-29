@@ -84,7 +84,10 @@ Call the file `./host_vars/access-main`.
 ## Create host_files folder
 1. Copy `./host_files/template-main` and call it the same name you gave the main server in the inventory file (`main_server_name`).
 Call the folder `./host_files/access-main`.
-2. Edit `./host_files/access-main/repositories.json` with all the git repositories URLS. **Use the SSH URL**.
+2. Edit `./host_files/access-main/repositories.json` with all the git repositories URLS. 
+   * For public repositories use the HTTP URL 
+   * For private repositories use the SSH URL 
+     * In case of multiple private repositories see below [SSH Aliasing](#ssh-aliasing)
 
 ## TLS Mutual Authentication for docker daemon
 **Edit docker-tls.sh for correct hostnames and IPs?.**
@@ -167,7 +170,7 @@ One key is needed per repository, remove any additional keys and their entries f
 Rename the host aliases so that it is more human-readable and correct any urls in `repositories.json`
 
 ### SSH Aliasing
-If multiple repositories (on the same server) are needed use the Host aliasing mechanism to avoid issues with the deploy keys.
+If multiple private repositories (on the same server) are needed, use the Host aliasing mechanism to avoid issues with the Deploy Keys.
 
 For example if 2 repositories are hosted at `github.com` edit the `ssh_config` and `repositories.json` files:
 
