@@ -1,0 +1,6 @@
+{
+  "repositories": [
+    "git@prod.github.com:mp-access/Mock-Course.git",
+    "git@staging.github.com:mp-access/Private-Mock-Course.git"
+  ]
+}

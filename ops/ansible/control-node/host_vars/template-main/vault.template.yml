@@ -1,0 +1,15 @@
+# Github/Gitlab webhook secrets
+vault_github_webhook_secret: TODO
+vault_gitlab_webhook_secret: TODO
+
+# Keycloak db secrets
+vault_keycloakdb_user: keycloak
+vault_keycloakdb_password: TODO
+
+# Keycloak app secrets
+vault_keycloak_admin_username: admin
+vault_keycloak_admin_password: TODO
+
+# Mongo secrets
+vault_mongodb_user: mongo
+vault_mongodb_password: TODO

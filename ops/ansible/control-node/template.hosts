@@ -1,0 +1,5 @@
+[main]
+access-template-main ansible_host=x.x.x.x
+
+[worker]
+access-template-worker ansible_host=x.x.x.x
