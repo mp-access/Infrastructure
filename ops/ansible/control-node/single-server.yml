@@ -1,0 +1,53 @@
+- hosts: worker
+  become: yes
+  tasks:
+    - name: Print init
+      debug:
+        msg: Starting initialization of Access Worker node
+
+    - name: Docker role
+      debug:
+        msg: Installing docker
+
+    - import_role:
+        name: docker
+      tags: docker-installation
+
+    - name: Worker role
+      debug:
+        msg: Setting up worker node
+
+    - import_role:
+        name: worker
+      tags: worker
+
+- hosts: main
+  tasks:
+    - name: Print init
+      debug:
+        msg: Starting initialization of Access Main node
+
+    - name: Add the user 'access' with a primary group of 'docker'
+      user:
+        name: access
+        comment: ACCESS user
+        group: docker
+        shell: /bin/bash
+        append: yes
+        state: present
+      become: yes
+
+    - name: Access role
+      debug:
+        msg: Setting up access node
+
+    - import_role:
+        name: access
+      become: yes
+      become_user: access
+      tags: access
+
+    - import_role:
+        name: letsencrypt
+      become: yes
+      tags: letsencrypt
