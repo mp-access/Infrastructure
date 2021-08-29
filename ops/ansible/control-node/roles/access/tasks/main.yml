@@ -51,7 +51,7 @@
 
     - name: Copy nginx conf
       template:
-        src: "host_files/{{ inventory_hostname }}/conf-no-tls.nginx.j2"
+        src: "files/conf-no-tls.nginx.j2"
         dest: ~/access/nginx/conf.nginx
         mode: 600
 
@@ -65,7 +65,7 @@
 
     - name: Copy selfsigned nginx conf
       copy:
-        src: "host_files/{{ inventory_hostname }}/conf-selfsigned.nginx"
+        src: "files/conf-selfsigned.nginx"
         dest: ~/access/nginx/conf.nginx
         mode: 600
       when: not letsencrypt
@@ -99,26 +99,42 @@
         services:
           - postgres
           - keycloak
+      tags:
+        - keycloak
 
     - name: Wait on keycloak
       pause:
-        seconds: 30
+        seconds: 60
+      tags:
+        - keycloak
 
     - name: Copy realm provisioning script
-      copy:
+      template:
         src: ../files/access-realm-config.sh
         dest: ~/access/access-realm-config.sh
         mode: 0555
+      tags:
+        - keycloak
 
-    - name: Add and configure realm
-      block:
-        - shell: |
+    - block:
+        - name: Add and configure realm
+          shell: |
             docker cp ~/access/access-realm-config.sh $(docker-compose -f ~/access/docker-compose.yml ps -q keycloak):/opt/jboss/keycloak
             docker-compose -f ~/access/docker-compose.yml exec keycloak bash -c "sh /opt/jboss/keycloak/access-realm-config.sh"
+          retries: 3
+          delay: 5
           register: error
       rescue:
-        - debug:
+        - name: Realm already exists
+          debug:
             msg: "Keycloak: {{ 'realm already exists' if 'Conflict detected' in error.stdout else 'Something unexpected happened' }}"
+          when: '"Conflict detected" in error.stdout'
+        - name: Unexpected error while configuring realm
+          debug:
+            msg: "Keycloak: {{ error.stdout }}"
+          when: '"Conflict detected" not in error.stdout'
+      tags:
+        - keycloak
 
     - name: Start ACCESS
       docker_compose:
