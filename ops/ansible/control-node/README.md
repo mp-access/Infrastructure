@@ -226,6 +226,16 @@ Instead of running both playbooks run the simplified playbook `single-server.yml
 ansible-playbook -i vm.hosts single-server.yml
 ```
 
+## Emails
+Configure sending emails: https://{{ auth_server }}/auth/admin/master/console/#/realms/access/smtp-settings
+
+![Email configs](./assets/email-configs.png)
+
+**Note: the "test connection" button does not work, maybe a regression in Keycloak 7.0.0**
+To test sending emails create a user with your email address and try sending yourself emails
+
+![Email tests](./assets/test-emails.png)
+
 ## Testing on VMs
 See [Vagrant](ops/ansible/test-systems/README.md).
 
