@@ -7,6 +7,7 @@
       with_items:
         - { name: /var/docker }
         - { name: /etc/systemd/system/docker.service.d/ }
+      when: single_server is defined and not single_server
 
     - name: Copy docker certs for server, daemon.json and service files
       copy:
@@ -19,6 +20,7 @@
         - { src: 'host_files/{{ inventory_hostname }}/server-key.pem', dest: '/var/docker/server-key.pem' }
         - { src: '../files/docker-daemon-tls.json', dest: '/etc/docker/daemon.json' }
         - { src: '../files/no_host_docker.service.d', dest: '/etc/systemd/system/docker.service.d/docker.conf' }
+      when: single_server is defined and not single_server
 
     - name: Restart Docker service to apply changes
       systemd:
@@ -26,8 +28,12 @@
         state: restarted
         daemon_reload: yes
         enabled: yes
+      when: single_server is defined and not single_server
 
     - name: Netstat dockerd
       shell: netstat -tulnp | grep dockerd
       register: netstat_out
+      when: single_server is defined and not single_server
+
     - debug: var=netstat_out.stdout_lines
+      when: single_server is defined and not single_server
