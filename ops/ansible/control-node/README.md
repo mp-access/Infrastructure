@@ -152,19 +152,29 @@ a deploy key can be used only once. So if multiple private repos live on the sam
 However ACCESS does not have a mechanism for selecting private keys and just delegates everything to ssh and ssh_config.
 See [SSH Aliasing](#ssh-aliasing)
 
-Run the following script to create the necessary deploy keys.
+1. Run the following script to create the necessary deploy keys.
+The script will create 10 keys. You can simply delete any keys which are not needed though.
 
 ```bash
 chmod u+x generate-repo-keys.sh
 HOST=github.com ./generate-repo-keys.sh
 ```
 
-Move the generated files to `host_files/{{ inventory_hostname }}/git/` and encrypt the files with:
+2. Move the generated `ssh_config` to `host_files/{{ inventory_hostname }}/ssh_config`
+```bash
+cp git_ssh_keys/ssh_config host_files/{{ inventory_hostname }}/
+```
+
+3. Move the generated private/public keys to `host_files/{{ inventory_hostname }}/git/`
+```bash
+mkdir -p host_files/{{ inventory_hostname }}/git
+cp git_ssh_keys/* host_files/access-test/git/
+```
+
+4. Encrypt the private keys with:
 ```bash
 ansible-vault encrypt host_files/{{ inventory_hostname }}/git/*
 ```
-
-Move the generated `ssh_config` to `host_files/{{ inventory_hostname }}/ssh_config`
 
 One key is needed per repository, remove any additional keys and their entries from the ssh_config file.
 Rename the host aliases so that it is more human-readable and correct any urls in `repositories.json`
@@ -197,7 +207,7 @@ Host staging.github.com
 
 ## Repository configuration
 On the repository add the generated public keys as deploy key.
-On Github: https://github.com/mp-access/Private-Mock-Course/settings/keys
+On Github: https://github.com/{{ private_repository }}/settings/keys
 
 ## Install ACCESS
 The entire process is scripted using ansible. 

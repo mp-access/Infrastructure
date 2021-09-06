@@ -7,11 +7,19 @@
         state: directory
         owner: access
 
+    - name: Copy docker-compose.yml for single-server deployment
+      copy:
+        src: ../files/docker-compose.single-server.yml
+        dest: ~/access/docker-compose.yml
+        mode: 0700
+      when: single_server is defined and single_server
+
     - name: Copy docker-compose.yml
       copy:
         src: ../files/docker-compose.yml
         dest: ~/access/docker-compose.yml
         mode: 0700
+      when: single_server is defined and not single_server
 
     - name: Create .env file
       template:
@@ -80,6 +88,7 @@
         - { src: 'host_files/{{ inventory_hostname }}/client-cert.pem', dest: '~/access/certs-docker/cert.pem' }
         - { src: 'host_files/{{ inventory_hostname }}/client-key.pem', dest: '~/access/certs-docker/key.pem' }
       tags: dockercerts
+      when: single_server is defined and not single_server
 
     - name: Copy git ssh keys
       copy:
