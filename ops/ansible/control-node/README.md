@@ -80,6 +80,12 @@ Call the file `./host_vars/access-main`.
 3. Create and write passwords into `./host_vars/access-main/vault.yml`
 4. Set the remaining variables in `./host_vars/access-main/vars.yml`
 
+**If running main and worker on the same server:**
+```json
+# run main and worker on a single server
+single_server: true
+```
+
 
 ## Create host_files folder
 1. Copy `./host_files/template-main` and call it the same name you gave the main server in the inventory file (`main_server_name`).

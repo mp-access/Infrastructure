@@ -29,3 +29,6 @@ auth_web_server_name:
 
 # use letsencrypt for TLS?
 letsencrypt: true
+
+# run main and worker on a single server
+single_server: true
