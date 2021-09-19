@@ -3,9 +3,7 @@ version: '3'
 
 services:
   postgres:
-      container_name: postgresdb
-      hostname: postgres
-      image: postgres
+      image: postgres:11-alpine
       volumes:
         - postgresdata:/var/lib/postgresql/data
       environment:
@@ -13,22 +11,22 @@ services:
         POSTGRES_USER: keycloak
         POSTGRES_PASSWORD: password
   mongo:
-      image: mongo
+      image: mongo:4.2.0-bionic
       container_name: mongo
+      environment:
+        TZ: Europe/Zurich
       ports:
-        - 27017:27017
+        - "27017:27017"
       volumes:
         - mongodata:/data/db
   mailhog:
-      container_name: emailserver
       image: mailhog/mailhog
       hostname: mailhog
+      entrypoint: "MailHog -invite-jim -jim-linkspeed-affect=1 -jim-linkspeed-max=1 -jim-linkspeed-min=1"
       ports:
-        - 1025:1025
-        - 8025:8025
+        - "1025:1025"
+        - "8025:8025"
   keycloak:
-      container_name: idp
-      hostname: idp
       image: jboss/keycloak:7.0.0
       environment:
         DB_VENDOR: POSTGRES
@@ -39,21 +37,17 @@ services:
         DB_PASSWORD: password
         KEYCLOAK_USER: admin
         KEYCLOAK_PASSWORD: admin
-        # Uncomment the line below if you want to specify JDBC parameters. The parameter below is just an example, and it shouldn't be used in production without knowledge. It is highly recommended that you read the PostgreSQL JDBC driver documentation in order to use it.
-        #JDBC_PARAMS: "ssl=true"
+        TZ: Europe/Zurich
       ports:
-        - 9999:8080
+        - "9999:8080"
       depends_on:
         - postgres
-        - mailhog
       command:
       - "-b 0.0.0.0"
       - "-Dkeycloak.migration.action=import -Dkeycloak.migration.provider=singleFile -Dkeycloak.migration.file=/opt/jboss/keycloak/realm-config.json -Dkeycloak.migration.strategy=OVERWRITE_EXISTING"
       volumes:
         - ./keycloak-configs/keycloak-export.json:/opt/jboss/keycloak/realm-config.json
         - ./keycloak-themes/access:/opt/jboss/keycloak/themes/access
-      links:
-        - "mailhog:email.server"
 volumes:
   mongodata:
   postgresdata:
