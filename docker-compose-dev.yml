@@ -1,9 +1,8 @@
-version: '3'
-
+version: '3.9'
 
 services:
   postgres:
-      image: postgres:11-alpine
+      image: postgres:14.1-alpine
       volumes:
         - postgresdata:/var/lib/postgresql/data
       environment:
@@ -11,7 +10,7 @@ services:
         POSTGRES_USER: keycloak
         POSTGRES_PASSWORD: password
   mongo:
-      image: mongo:4.2.0-bionic
+      image: mongo:5.0.5
       container_name: mongo
       environment:
         TZ: Europe/Zurich
@@ -27,7 +26,7 @@ services:
         - "1025:1025"
         - "8025:8025"
   keycloak:
-      image: jboss/keycloak:7.0.0
+      image: jboss/keycloak:16.1.0
       environment:
         DB_VENDOR: POSTGRES
         DB_ADDR: postgres
@@ -44,7 +43,10 @@ services:
         - postgres
       command:
       - "-b 0.0.0.0"
-      - "-Dkeycloak.migration.action=import -Dkeycloak.migration.provider=singleFile -Dkeycloak.migration.file=/opt/jboss/keycloak/realm-config.json -Dkeycloak.migration.strategy=OVERWRITE_EXISTING"
+      - "-Dkeycloak.migration.action=import"
+      - "-Dkeycloak.migration.provider=singleFile"
+      - "-Dkeycloak.migration.file=/opt/jboss/keycloak/realm-config.json"
+      - "-Dkeycloak.migration.strategy=OVERWRITE_EXISTING"
       volumes:
         - ./keycloak-configs/keycloak-export.json:/opt/jboss/keycloak/realm-config.json
         - ./keycloak-themes/access:/opt/jboss/keycloak/themes/access
